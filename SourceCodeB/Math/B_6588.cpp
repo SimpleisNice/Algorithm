@@ -7,12 +7,12 @@ int main(void)
 	bool tempList[1000001];
 	vector<int> tempVector;
 
-	for (int i = 2; i * 2 < 1000000; i++)
+	for (int i = 2; i * 2 < 1000001; i++)
 	{
 		if (!tempList[i])
 		{
 			tempVector.push_back(i);
-			for (int j = i * 2; j < 1000000; j += i)
+			for (int j = i * 2; j < 1000001; j += i)
 			{
 				tempList[j] = true;
 			}

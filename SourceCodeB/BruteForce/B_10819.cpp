@@ -1,49 +1,45 @@
 #include <iostream>
-#include <list>
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 
 int main(void)
 {
     ios_base::sync_with_stdio(false);
-    list<int> tempA;
+
     int tempN;
-    int temp;
-    int totalSum = 0;
-    int tempFirst;
     cin >> tempN;
 
-    while(tempN--)
-    {
-        cin >> temp;
+    int maxNum = 0;
+    vector<int> tempVector(tempN);
 
-        tempA.push_back(temp);
+    for(int i = 0; i < tempN; ++i)
+    {
+        cin >> tempVector[i];
     }
-
-    tempA.sort();
-    tempFirst = *(tempA.begin());
-
-    while(!tempA.empty())
+    sort(tempVector.begin(), tempVector.end());
+    
+    do    
     {
-        int tempSecond = 0;
-        int max = 0;
+        int tempMax = 0;
 
-        tempA.remove(tempFirst);
-
-        for(list<int>::iterator it = tempA.begin() ; it != tempA.end(); ++it)
+        for(int i = 1; i < tempN; ++i)
         {
-            int tempMax = abs(tempFirst - *it);
-            if(tempMax > max)
-            {
-                max = tempMax;
-                tempSecond = *it;
+            int tempSum = tempVector[i - 1] - tempVector[i];
+            
+            if(tempSum < 0) 
+            {  
+                tempSum *= -1;
             }
+            tempMax += tempSum;
+            
         }
-        
-        cout << max << " = " << tempFirst << " + " << tempSecond <<  endl;
-        tempFirst = tempSecond;
-        totalSum += max;
-    }
+        if(maxNum < tempMax)
+        {
+            maxNum = tempMax;
+        } 
+    }while(next_permutation(tempVector.begin(), tempVector.end()));
 
-    cout << totalSum << endl;
+    cout << maxNum << '\n';
     return 0;
-}

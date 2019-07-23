@@ -27,33 +27,30 @@ int CirculationResult(int tempA, int tempB, int op)
 }
 int main(void)
 {
-	ios_base::sync_with_stdio(false);
+	//ios_base::sync_with_stdio(false);
 	int tempN;
-	cin >> tempN;
-
+	scanf("%d", &tempN);
 	vector<int> vectorN(tempN);
 	vector<int> vectorOpCount(4);
-	vector<int> vectorOpPermutation(tempN - 1);
+	vector<int> vectorOpPermutation;
 
 	int max = INT_MIN;
 	int min = INT_MAX;
 
 	for (int i = 0; i < tempN; i++)
 	{
-		cin >> vectorN[i];
+		scanf("%d", &vectorN[i]);
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		cin >> vectorOpCount[i];
+        scanf("%d", &vectorOpCount[i]);
 	}
 
-	int tempPos = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < vectorOpCount[i]; j++)
 		{
-			vectorOpPermutation[tempPos] = i;
-			tempPos++;
+            vectorOpPermutation.push_back(i);
 		}
 	}
 
@@ -72,6 +69,6 @@ int main(void)
 			min = tempSum;
 	} while (next_permutation(vectorOpPermutation.begin(), vectorOpPermutation.end()));
 
-	cout << max << '\n' << min << '\n';
+    printf("%d\n%d\n",max, min);
 	return 0;
 }

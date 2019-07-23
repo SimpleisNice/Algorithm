@@ -7,7 +7,6 @@ using namespace std;
 vector<int> tempVector;
 bool checkArray[9] = {false,};
 int intArray[9] = {0, };
-
 void GetNM(int tempN, int tempM, int count)
 {
     if(count == tempM)
@@ -26,11 +25,15 @@ void GetNM(int tempN, int tempM, int count)
         if(checkArray[i])
             continue;
 
-        intArray[count] = tempVector[i];
-        
-        if( count != 0 && intArray[count] == intArray[count - 1])
+        // check
+        if(i != 0 && intArray[count]  == tempVector[i])
             continue;
+
+        intArray[count] = tempVector[i];
+        checkArray[i] = true;
+
         GetNM(tempN, tempM, count + 1);
+        checkArray[i] = false;
     }
 }
 

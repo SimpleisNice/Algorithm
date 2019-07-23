@@ -1,52 +1,52 @@
 #include <iostream>
 #include <vector>
-
 using namespace std;
+
 int main(void)
 {
-    int tempN; 
+    ios_base::sync_with_stdio(false);
+    int tempN;
     int max = 0;
     cin >> tempN;
 
+    vector<int> tempMoeny(tempN);
     vector<int> tempDay(tempN);
-    vector<int> tempMoney(tempN); 
 
-
-    for(int i = 0; i < tempN; ++i)
+    for(int i = 0; i < tempN; i++)
     {
-        cin >> tempDay[i] >> tempMoney[i];
+        cin >> tempDay[i] >> tempMoeny[i];
     }
-    
-    for(int i = 0; i < tempN; ++i)
+    for(int i = 0; i < tempN; i++)
     {
-        int pos = i;
-        int posAdd = 0;
+       
         int tempMax = 0;
-        
+        int tempPos = 0;
+        // 7 
         while(true)
         {
-			if (i + tempDay[i] + posAdd >= tempN)
-				break;
+            if(i + tempDay[i] + tempPos>= tempN)
+                break;  
 
-            tempMax = tempMoney[i];
-            pos = tempDay[i] + posAdd++;
-                
+            tempMax = tempMoeny[i];
+            int pos = i + tempDay[i] + tempPos;
+            tempPos++;
+
             while(true)
             {
-                if(pos + tempDay[pos] >= tempN)
+                if(tempDay[pos] + pos >= tempN)
+                {   
                     break;
-                tempMax += tempMoney[pos];    
+                }
+                tempMax += tempMoeny[pos];
                 pos += tempDay[pos];
-
-                cout << tempMoney[pos] << " ";
             }
-            cout <<"\n";
-            if(tempMax > max)
+            if(max < tempMax)
             {
                 max = tempMax;
             }
         }
     }
-    cout << max <<"\n";
+
+    cout << max << '\n';
     return 0;
 }

@@ -136,7 +136,10 @@ https://code.plus/course/32
   - 퇴사(14501) @
   - 연산자 끼워넣기(2)(15658) @
   - === 비트마스크 ===
-  - 부분집합의 합
+  - 부분집합의 합(1182)
+    - 비트 마스크를 활용해서 문제를 풀수 있음. 1 ~ (1 << N)개의 경우의 수를 확인하는 식으로
+      `if( i & (1 << j))`를 통해 해당 숫자가 사용중인지 확인하고, 사용한다면 더해준다
+      bit연산을 활용하여 경우의 수를 찾고 정할 수 있음을 알 수 있었다.
   - 집합(11723)
     - switch보다는 if가 성능이 좋기 때문에, if를 활용하는게 좋다
 
@@ -158,9 +161,78 @@ https://code.plus/course/32
   - N과 M12
 
 - 그래프와 BFS
-  - ABCDE(13023)
+  - ABCDE(13023)@
+
   - DFS와 BFS(1260)
-  - 이분 그래프(1707)
+
+    - DFS, BFS를 직접 구현해보고 실험해보는 문제이다. DFS의 경우 재귀를 활용해서 문제를 해결했고, BFS의 경우 `while`문을 통해 문제를 해결했다.
+
+    - 이 문제의 경우, 테스트 케이스 및 연결고리에 문제가 없어서 `if true`체크 없이 동작이 가능하다. 하지만 BFS를 정확하게 구현하기 위해서는 사용한것은 `true`체크를 해줘야한다.
+
+      ```c++
+      vector<int> tempVector[1001];  // 오름차순으로 정렬이 되있다고 가정
+      bool check[1001] = {false, };
+      // DFS
+      void DFS(int temp)
+      {
+          cout << temp << '\n';
+          check[temp] = true;
+          for(int i = 0; i < tempVector[temp].size(); ++i)
+          {
+              int tempT = tempVector[temp][i];
+              if(!check[temp])
+              {
+                  DFS(tempT);
+      		}
+          }
+      }
+      // BFS
+      void BFS(int temp)
+      {
+      	queue<int> tempQueue;
+      
+      	tempQueue.push(temp);
+      	check[temp] = true;
+      	while (!tempQueue.empty())
+      	{
+      		int tempNum = tempQueue.front();
+      		tempQueue.pop();
+      		cout << tempNum << ' ';
+      		for (int i = 0; i < tempVector[tempNum].size(); i++)
+      		{
+      			if (!check[tempVector[tempNum][i]])
+      			{
+      				check[tempVector[tempNum][i]] = true;
+      				tempQueue.push(tempVector[tempNum][i]);
+      			}
+      		}
+      	}
+      }
+      ```
+
+  - 연결 요소(11724)
+
+    - 연결 요소를 구하는 문제로, BFS를 활용해서 문제를 풀었다. 일단 `vector`연결된 간선의 개수를 넣은 후 정렬한다. 정렬한 후 BFS코드를 통해 연결요소를 확인하고, 연결된 요소가 없는 경우 count값을 증가시켜주고, check배열에서 false 배열을 찾아 넣어준 후, 다시 BFS를 통해 연결요소를 구한다.
+      추가적으로 정점은 1부터 시작하므로, for문의 초기 값을 1부터 시작한다.
+    - [그래프에 관한 자료](https://ratsgo.github.io/data%20structure&algorithm/2017/11/18/graph/)
+
+  - 이분 그래프(1707)@
+
+  - 단지번호붙이기(2667)
+
+    - BFS를 활용해 문제를 풀었으며, 문제를 해결하기 위해 map에서 단지를 파악하기 위해 연결 요소 문제와 동일하게 문제를 풀었으며, 이때 위치를 파악하기 위해 `pair`를 활용했다. 또한 단지의 개수를 알아야 하기 때문에, 단지를 확인할때 마다 값을 더해주며 단지의 개수를 확인하고, 마지막 부분에 `vector`에 추가해 주었다.
+      이때 참고 사항으로 상하 좌우를 확인 해야하기 때문에 상하 좌우를 확인하는 코드를 추가해야한다.
+
+  - 섬의 개수(4963)
+
+    - 단지번호 붙이기 문제와 비슷하게 풀었으며, 차이점으로는 상하 좌우 대각선을 포함하여, 8방향을 확인해야했다. 그러므로 해당 확인하는 배열을 추가했고, 주의 사항으로 0 0 값이 입력되기 전에는 다시 맵을 만들어 확인해야 하므로, 초기화를 잘해줘야 한다.
+
+  - 미로 탐색(2178)
+
+    - 대표적인 BFS문제로, DFS문제를 풀경우 시간 초과 및 경우를 명확하게 구하기 업렵다.
+      그러므로 BFS를 활용하여, 최단거리 탐색을 진행하며, 이전에 지나간 곳을 check해 나가듯, check한 곳에 가중치를 두어, 최단거리를 구할 수 있다.
+
+  - 토마토(7576)
 
 - 다이나믹 프로그래밍
 
@@ -197,7 +269,6 @@ https://code.plus/course/32
 
   - 1, 2, 3 더하기 5(15990)
 
-  - 
 
 
 https://code.plus/course/33
@@ -209,10 +280,8 @@ https://code.plus/course/35
 #### 참고자료
 
 - [백준 결과에 대하여]( <https://www.acmicpc.net/help/judge>)
-
 - [eof에 관하여](https://funylife.tistory.com/entry/%EB%AC%B8%EC%9E%90%EC%99%80-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%B2%98%EB%A6%AC-%ED%95%A8%EC%88%98-3-EOF%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%B4%ED%95%B4)
 - [c scanf](http://www.cplusplus.com/reference/cstdio/scanf/)
 - [ios_base](https://modoocode.com/144)
-
 - [VScode auto complete 자동완성에 대해](<https://stackoverflow.com/questions/32911977/prevent-autocomplete-in-visual-studio-code>)
-
+- [memset](http://www.cplusplus.com/reference/cstring/memset/)

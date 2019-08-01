@@ -1,60 +1,71 @@
 #include <iostream>
-#include <vector>
 #include <queue>
+#include <vector>
 #include <cstring>
-#include <algorithm>
-#include <string>
 using namespace std;
 
+vector<int> tempV[20001];
+bool check[20001];
+int color[20001];
+int colorN = 1;
 
-vector<int> tempV[200001];
-bool useCheck[20001];
-int colorCheck[20001];      //1,2
+int K, V, E;
 
-string BFS()
+void bfs()
 {
-	int tempN = 1;
-	//bfs
-	queue<int> tempQ;
-
-	tempQ.push(1);
-	useCheck[1] = true;
-	colorCheck[1] = tempN++;
-
-	while (!tempQ.empty())
+	for (int i = 1; i <= V; ++i)
 	{
-		int tempNum = tempQ.front();
-		tempQ.pop();
+		if (check[i])
+			continue;
+		queue<int> tempQ;
+		tempQ.push(i);
+		check[i] = true;
+		color[i] = 3 - colorN;
+		colorN = 3 - colorN;
 
-		for (int i = 0; i < tempV[tempNum].size(); ++i)
+		while (!tempQ.empty())
 		{
-			int temp = tempV[tempNum][i];
-			if (useCheck[temp])
-			{
-				if (colorCheck[temp] == colorCheck[tempNum])
-				{
-					return "NO\n";
-				}
-				continue;
-			}
+			int tempNum = tempQ.front();
+			tempQ.pop();
 
-			useCheck[temp] = true;
-			colorCheck[temp] = tempN;
-			tempQ.push(temp);
+			for (int j = 0; j < tempV[tempNum].size(); ++j)
+			{
+				int temp = tempV[tempNum][j];
+				if (check[temp])
+				{
+					if (color[temp] == color[tempNum])
+					{
+						cout << "NO\n";
+						return;
+					}
+					continue;
+				}
+				check[temp] = true;
+				tempQ.push(temp);
+				color[temp] = 3 - colorN;
+			}
+			colorN = 3 - colorN;
 		}
-		tempN = tempN == 1 ? 2 : 1;
 	}
-	return "YES\n";
+	cout << "YES\n";
+	return;
 }
 int main(void)
 {
-	int K, V, E;
-
+	ios_base::sync_with_stdio(false);
 	cin >> K;
+
 
 	while (K--)
 	{
 		cin >> V >> E;
+
+		for (int i = 1; i <= V; ++i)
+		{
+			tempV[i].clear();
+		}
+		memset(check, false, V + 1);
+		memset(color, 0, V + 1);
 
 
 		for (int i = 0; i < E; ++i)
@@ -65,21 +76,7 @@ int main(void)
 			tempV[tempA].push_back(tempB);
 			tempV[tempB].push_back(tempA);
 		}
-
-		for (int i = 0; i < E; i++)
-		{
-			sort(tempV[i].begin(), tempV[i].end());
-		}
-
-		cout << BFS();
-
-		for (int i = 0; i < E; ++i)
-		{
-			tempV[i].clear();
-		}
-		memset(useCheck, false, V);
-		memset(colorCheck, 0, V);
+		bfs();
 	}
-
 	return 0;
 }

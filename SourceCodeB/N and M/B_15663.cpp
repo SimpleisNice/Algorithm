@@ -24,11 +24,6 @@ void GetNM(int tempN, int tempM, int count)
     {
         if(checkArray[i])
             continue;
-
-        // check
-        if(i != 0 && intArray[count]  == tempVector[i])
-            continue;
-
         intArray[count] = tempVector[i];
         checkArray[i] = true;
 

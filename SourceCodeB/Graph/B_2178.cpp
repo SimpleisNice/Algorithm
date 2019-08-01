@@ -45,6 +45,8 @@ void bfs()
 }
 int main(void)
 {
+    ios_base::sync_with_stdio(false);
+    
 	cin >> tempH >> tempW;
 
 	for (int i = 0; i < tempH; ++i)

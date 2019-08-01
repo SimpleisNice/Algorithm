@@ -1,33 +1,33 @@
 #include <iostream>
 using namespace std;
 
-int tempArray[1000001];
-int GetSumList(int temp, int totalCount)
+long tempArray[1000001];
+long GetSumList(int temp)
 {
-    if(temp == 0)
-        return ++totalCount;
-    if(temp < 0)
-        return 0;
-    if(tempArray[temp] > 0)
-        return tempArray[temp];
-    tempArray[temp] = GetSumList(temp-1, totalCount)  % 1000000009 + 
-                        GetSumList(temp-2, totalCount) % 1000000009 + 
-                        GetSumList(temp-3, totalCount) % 1000000009;
-    
-    return tempArray[temp];
+    tempArray[0] = 1;
+    tempArray[1] = 1;
+    tempArray[2] = 2;
+
+    for(int i = 3; i <= temp; i++)
+    {
+        tempArray[i] = tempArray[i-3] % 1000000009 + tempArray[i - 2] % 1000000009 + tempArray[i - 1] % 1000000009;
+    }
+
+    return tempArray[temp] % 1000000009;
 }
 
 
 int main(void)
 {
-    ios_base::sync_with_stdio(false);
     int tempN;
+    long num;
+
     cin >> tempN;
     while(tempN--)
     {
         int tempNum;
         cin >> tempNum;
-        cout << GetSumList(tempNum, 0) << '\n';
+        cout << GetSumList(tempNum) << '\n';
     }
     return 0;
 }

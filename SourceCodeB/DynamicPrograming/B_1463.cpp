@@ -1,39 +1,38 @@
 #include <iostream>
-
 using namespace std;
 
 
-int minList[1000001];
-int GetMinList(int tempX)
+int tempA[1000001];
+
+void SetArray(int num)
 {
-    if(tempX == 1)
-        return 0;
-    
-    if(minList[tempX] > 0)
-        return minList[tempX];
+    tempA[1] = 0;
 
-    minList[tempX] = GetMinList(tempX - 1) + 1;
+    for(int i =2; i <= num; ++i)
+    {
 
-    if(tempX % 2 == 0)
-    {
-        int temp = GetMinList(tempX / 2) + 1;
-        if(minList[tempX] > temp) 
-            minList[tempX] = temp;
+        tempA[i] = tempA[i- 1] + 1;
+
+        if(i % 2 == 0)
+        {
+            if(tempA[i / 2] + 1 < tempA[i])
+                tempA[i] = tempA[i / 2] + 1;
+        }
+        if(i % 3 == 0)
+        {
+            if(tempA[i / 3] + 1 < tempA[i])
+            {
+                tempA[i] = tempA[i / 3] + 1;
+            }
+        }
     }
-    if(tempX % 3 == 0)
-    {
-        int temp = GetMinList(tempX / 3) + 1;
-        if(minList[tempX] > temp)
-            minList[tempX] = temp;
-    }
-    return minList[tempX];
+    cout << tempA[num] << '\n';
 }
 int main(void)
 {
     ios_base::sync_with_stdio(false);
-    int tempX;
-    cin >> tempX;
+    int tempN;
+    cin >> tempN;
 
-    cout << GetMinList(tempX) << endl;
-    return 0;
+    SetArray(tempN);
 }

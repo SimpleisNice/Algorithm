@@ -1,17 +1,15 @@
-#include <iostream>
-using namespace std;
+#include <algorithm>
+#include<iostream>
 
+
+using namespace std;
 
 int main(void)
 {
-    bool check[1001];
-    int check2[1001];
-    cout << sizeof(check) << endl;
+    int tempA, tempB, tempC;
 
-    cout << sizeof(check) / sizeof(check[0]) << endl;
+    cin >> tempA >> tempB >> tempC;
 
-    cout << sizeof(check2) << endl;
 
-    cout << sizeof(check2) / sizeof(check2[0]) << endl;
-    return 0;
+    cout << max(max(tempA, tempB), tempC) << endl;
 }

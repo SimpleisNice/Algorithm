@@ -2,19 +2,22 @@
 
 using namespace std;
 
-int d[91] = {0,};
+long d[91][2];
 int main(void)
 {
     int N;
     scanf("%d", &N);
 
 
-    d[1] = 1;
-    d[2] = 1;
-    for(int i = 3; i <= N; i++)
+    d[1][0] = 0; d[1][1] = 1;
+    d[2][0] = 1; d[2][1] = 0;
+
+    for(int i = 3; i <= N; ++i)
     {
-        d[i] = d[i - 1] + d[i - 2];
+        d[i][0] = d[i - 1][0] + d[i - 1][1];
+        d[i][1] = d[i - 1][0];
     }
 
-    printf("%d\n", d[N]);
+
+    printf("%ld\n", d[N][0] + d[N][1]);
 }

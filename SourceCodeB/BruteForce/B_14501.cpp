@@ -1,35 +1,36 @@
 #include <iostream>
+
 using namespace std;
 
-int dayInfo[16];
-int payInfo[16];
-int tempN;
-int max = 0;
-void GetReward(int day, int sum)
+int info[17][2];
+int maxSum = 0;
+int N;
+void GetMaxPay(int startNum, int sum)
 {
-
-	if (dayInfo[day] - 1 <= tempN)
-		GetReward(day + 1, payInfo[day] );
-	if (dayInfo[day] + day - 1 <= tempN)
-		GetReward(dayInfo[day] + day, sum + payInfo[day]);
-	if (day + 1 <= tempN && dayInfo[day + 1] + day - 1 <= tempN)
-		GetReward(dayInfo[day + 1] + day, sum + payInfo[day]);
-	if (day >= tempN)
+	if(startNum > N)
 	{
-		max = max < sum ? sum : max;
+		if(maxSum < sum)
+			maxSum = sum;
 		return;
 	}
+	GetMaxPay(startNum + 1, sum);
+
+	if(startNum + info[startNum][0] -1 <= N)
+		sum += info[startNum][1];
+	GetMaxPay(startNum + info[startNum][0], sum);
+
+	return;	
 }
 int main(void)
 {
-	cin >> tempN;
+	scanf("%d", &N);
 
-	for (int i = 1; i <= tempN; i++)
+	for(int i = 1; i <= N; ++i)
 	{
-		cin >> dayInfo[i] >> payInfo[i];
+		scanf("%d %d", &info[i][0], &info[i][1]);
 	}
-	GetReward(1, 0);
+	GetMaxPay(1, 0);
 
-	cout << max << '\n';
+	printf("%d\n", maxSum);
 	return 0;
 }

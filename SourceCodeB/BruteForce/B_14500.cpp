@@ -2,44 +2,73 @@
 
 using namespace std;
 
+int map[500][500];
+
+int block[19][3][2] = 
+{    
+    {{0,1}, {0,2}, {0,3}},    
+    {{1,0}, {2,0}, {3,0}},    
+    {{1,0}, {1,1}, {1,2}},    
+    {{0,1}, {1,0}, {2,0}},    
+    {{0,1}, {0,2}, {1,2}},    
+    {{1,0}, {2,0}, {2,-1}},    
+    {{0,1}, {0,2}, {-1,2}},    
+    {{1,0}, {2,0}, {2,1}},    
+    {{0,1}, {0,2}, {1,0}},    
+    {{0,1}, {1,1}, {2,1}},    
+    {{0,1}, {1,0}, {1,1}},    
+    {{0,1}, {-1,1}, {-1,2}},    
+    {{1,0}, {1,1}, {2,1}},    
+    {{0,1}, {1,1}, {1,2}},    
+    {{1,0}, {1,-1}, {2,-1}},    
+    {{0,1}, {0,2}, {-1,1}},    
+    {{0,1}, {0,2}, {1,1}},    
+    {{1,0}, {2,0}, {1,1}},    
+    {{1,0}, {2,0}, {1,-1}}
+};
+
 int main(void)
 {
-    ios_base::sync_with_stdio(false);
-    // 하나의 테트로미노를 놓았을때 최대의 값을 구해라.
-    int tempA[1][4] = {{1, 1, 1, 1}};
-    int tempB[2][2] = {{1,1}, {1,1}};
-    int tempC[3][2] = {{1, 0}, {1, 0}, {1, 1}};
-    int tempD[3][2] = {{1, 0}, {1, 1}, {0, 1}};
-    int tempF[2][3] = {{1, 1, 1}, {0, 1, 0}};
+    int N,M;
+    scanf("%d %d", &N, &M);
 
-    int ** tempList;
-    int tempN, tempM;
-    int max = 0;
-    cin >> tempN >> tempM;  
-
-    *tempList = new int[tempN];
-    for(int i = 0; i < tempN; i++)
+    for(int i = 0; i < N; ++i)
     {
-        tempList[i] = new int[tempM];
-    }
-
-    // set list
-    for(int i = 0; i < tempN; i++)
-    {
-        for(int j = 0; j < tempM; j++)
+        for(int j = 0; j < M; ++j)
         {
-            cin >> tempList[i][j];
+            scanf("%d", &map[i][j]);
+        }
+    }
+    int tempMax = 0;
+    for(int i = 0; i < N; ++i)
+    {
+        for(int j = 0; j < M; ++j)
+        {
+            for(int k = 0; k < 19; ++k)
+            {
+                int sum = map[i][j];
+                bool check = true;
+
+                for(int l = 0; l < 3; ++l)
+                {
+                    int x = i + block[k][l][0];
+                    int y = j + block[k][l][1];
+
+                    if(0 <= x && x < N && 0 <= y && y <M)
+                    {
+                        sum += map[x][y];
+                    }
+                    else{
+                        check = false;
+                        break;
+                    }
+                }
+
+                if(check && tempMax < sum)
+                    tempMax = sum;
+            }
         }
     }
 
-    // check max num
-    for(int i = 0; i < tempN; i++)
-    {
-        for(int j = 0; j < tempM; j++)
-        {
-            
-        }
-    }
-    
-    return 0;
+    printf("%d\n", tempMax);
 }

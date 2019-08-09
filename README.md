@@ -161,6 +161,7 @@ https://code.plus/course/32
   - N과 M7(15656)
   - N과 M8(15657)여기까지품
   - N과 M9(15663)@
+    - 여러개가 들어가기때문에 값을 구하기위해, 중복되는 값들의 개수 및 숫자들의 개수를 구해준다. 이후 숫자들의 개수 및 중복값들을 활용해 출력을 한다. 
   - N과 M10@
   - N과 M11@
   - N과 M12@
@@ -545,9 +546,5 @@ https://code.plus/course/35
   }
   ```
 
-  
-
-
-
-[SungBeom/다이나믹 프로그래밍/1, 2, 3 더하기(9095)_3.cpp](https://github.com/as-is-as/Basic/pull/26/files#diff-425ba894b91729586012873a57c3a06b)
+- [코드 참고](<https://rebas.kr/745>)
 

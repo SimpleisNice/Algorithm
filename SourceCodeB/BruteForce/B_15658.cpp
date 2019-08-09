@@ -1,74 +1,61 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 #include <climits>
 
 using namespace std;
 
-int CirculationResult(int tempA, int tempB, int op)
+int tempMax = INT_MIN;
+int tempMin = INT_MAX;
+
+int tempValue[12];
+int	tempOp[4];
+
+void GetCirculation(int N, int sum, int index, int op1, int op2, int op3, int op4)
 {
-	switch (op)
+	if(index == N)
 	{
-	case 0:
-		return tempA + tempB;
-	case 1:
-		return tempA - tempB;
-	case 2:
-		return tempA * tempB;
-	case 3:
-		if (tempA < 0)
-		{
-			tempA *= -1;
-			return -(tempA / tempB);
-		}
-		return tempA / tempB;
+		if(tempMax < sum)
+			tempMax = sum;
+		if(tempMin > sum)
+			tempMin = sum;
+		return;
 	}
-	return 0;
+
+	if(op1)
+	{
+		GetCirculation(N, sum + tempValue[index], index + 1, op1 -1, op2, op3, op4);
+	}
+	if(op2)
+	{
+		GetCirculation(N, sum - tempValue[index], index + 1, op1, op2 -1, op3, op4);
+	}
+	if(op3)
+	{ 
+		GetCirculation(N, sum * tempValue[index], index + 1, op1, op2, op3 - 1, op4);
+	}
+	if(op4)
+	{
+		GetCirculation(N, sum / tempValue[index], index + 1, op1, op2, op3, op4 -1);
+	}
 }
 int main(void)
 {
-	//ios_base::sync_with_stdio(false);
-	int tempN;
-	scanf("%d", &tempN);
-	vector<int> vectorN(tempN);
-	vector<int> vectorOpCount(4);
-	vector<int> vectorOpPermutation;
+	ios_base::sync_with_stdio(false);
 
-	int max = INT_MIN;
-	int min = INT_MAX;
+	cin.tie(0);
 
-	for (int i = 0; i < tempN; i++)
+	int N;
+	cin >> N;
+	for(int i = 0; i < N; ++i)
 	{
-		scanf("%d", &vectorN[i]);
+		cin >> tempValue[i];
 	}
-	for (int i = 0; i < 4; i++)
+	for(int i =0 ; i< 4; ++i)
 	{
-        scanf("%d", &vectorOpCount[i]);
+		cin >> tempOp[i];
 	}
 
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < vectorOpCount[i]; j++)
-		{
-            vectorOpPermutation.push_back(i);
-		}
-	}
+	GetCirculation(N, tempValue[0], 1, tempOp[0], tempOp[1], tempOp[2], tempOp[3]);
 
-
-	do
-	{
-		int tempSum = vectorN[0];
-		for (int i = 0; i < tempN - 1; i++)
-		{
-			tempSum = CirculationResult(tempSum, vectorN[i + 1], vectorOpPermutation[i]);
-		}
-
-		if (max < tempSum)
-			max = tempSum;
-		if (min > tempSum)
-			min = tempSum;
-	} while (next_permutation(vectorOpPermutation.begin(), vectorOpPermutation.end()));
-
-    printf("%d\n%d\n",max, min);
+	cout << tempMax << '\n' << tempMin <<'\n';
 	return 0;
 }

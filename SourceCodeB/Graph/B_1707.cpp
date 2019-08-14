@@ -1,74 +1,65 @@
-#include <iostream>
-#include <queue>
 #include <vector>
+#include <iostream>
+#include <algorithm>
 #include <cstring>
+
 using namespace std;
 
-vector<int> tempV[20001];
-bool check[20001];
-int color[20001];
-int colorN = 1;
-
 int K, V, E;
+bool check[20002];
+bool checkColor;
+int color[20002];
+int useColor = 1;
+vector<int> tempV[20002];	// 정점, first 연결된 정점, second 색상
 
-void bfs()
+void CheckBipartiteGraph(int index, int setColor)
 {
-	for (int i = 1; i <= V; ++i)
+	if(check[index])
 	{
-		if (check[i])
-			continue;
-		queue<int> tempQ;
-		tempQ.push(i);
-		check[i] = true;
-		color[i] = 3 - colorN;
-		colorN = 3 - colorN;
+		return;
+	}
+	else
+	{
+		check[index] = true;
+		color[index] = 3 - setColor;
 
-		while (!tempQ.empty())
+		for(int i = 0; i < tempV[index].size(); ++i)
 		{
-			int tempNum = tempQ.front();
-			tempQ.pop();
+			int indexTemp = tempV[index][i];
 
-			for (int j = 0; j < tempV[tempNum].size(); ++j)
+			if(!check[indexTemp])
 			{
-				int temp = tempV[tempNum][j];
-				if (check[temp])
-				{
-					if (color[temp] == color[tempNum])
-					{
-						cout << "NO\n";
-						return;
-					}
-					continue;
-				}
-				check[temp] = true;
-				tempQ.push(temp);
-				color[temp] = 3 - colorN;
+				CheckBipartiteGraph(indexTemp, color[index]);
+				useColor = color[index];
 			}
-			colorN = 3 - colorN;
+			else
+			{
+				if(color[index] == color[indexTemp])
+				{
+					checkColor = true;
+				}
+			}
 		}
 	}
-	cout << "YES\n";
-	return;
 }
 int main(void)
 {
+	cin.tie(0);
 	ios_base::sync_with_stdio(false);
+
 	cin >> K;
 
-
-	while (K--)
+	while(K--)
 	{
 		cin >> V >> E;
-
-		for (int i = 1; i <= V; ++i)
+		memset(check, false, sizeof(check));
+		memset(color, 0, sizeof(color));
+		for(int i = 1; i <= V; ++i)
 		{
 			tempV[i].clear();
 		}
-		memset(check, false, V + 1);
-		memset(color, 0, V + 1);
 
-
-		for (int i = 0; i < E; ++i)
+		for(int i = 1; i <= E; ++i)
 		{
 			int tempA, tempB;
 			cin >> tempA >> tempB;
@@ -76,7 +67,24 @@ int main(void)
 			tempV[tempA].push_back(tempB);
 			tempV[tempB].push_back(tempA);
 		}
-		bfs();
+		// sort
+		for(int i = 1; i <= V; ++i)
+		{
+			sort(tempV[i].begin(), tempV[i].end());
+		}
+		// bfs
+		for(int i = 1; i <= V; ++i)
+		{
+			CheckBipartiteGraph(i, useColor);
+		}
+		if(checkColor)
+		{
+			checkColor = false;
+			cout << "NO" << '\n';
+		}
+		else
+		{
+			cout << "YES" << '\n';
+		}
 	}
-	return 0;
 }

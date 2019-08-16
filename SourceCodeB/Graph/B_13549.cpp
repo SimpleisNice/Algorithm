@@ -2,9 +2,9 @@
 #include <queue>
 
 using namespace std;
-bool check[100001];
-int d[100001];
-int MAX = 100000;
+bool check[1000000];
+int d[1000000];
+int MAX = 1000000;
 
 int main(void)
 {
@@ -35,7 +35,7 @@ int main(void)
                 firstQueue.push(tempNum * 2);
             }
         }
-        if(tempNum + 1 <= MAX)
+        if(tempNum + 1 < MAX)
         {
             if(check[tempNum + 1] == false)
             {

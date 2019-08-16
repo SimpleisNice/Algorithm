@@ -1,71 +1,49 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <queue>
 
 using namespace std;
 
-bool check[1001] = { false, };
-vector<int> tempVector[1001];
-
+vector<int> tempV[2001];
+bool check[2001];
+int cnt = 1;
+int N, M;
+bool result;
 void DFS(int temp)
 {
 	check[temp] = true;
-	cout << temp << ' ';
-	for (int i = 0; i < tempVector[temp].size(); ++i)
-	{
-		int tempT = tempVector[temp][i];
-
-		if (!check[tempT])
+    for(int i = 0; i < tempV[temp].size(); ++i)
+    {
+		int num = tempV[temp][i];
+		if(!check[num])
 		{
-			DFS(tempT);
+			DFS(num);
+			cnt++;
 		}
-	}
-}
-void BFS(int temp)
-{
-	queue<int> tempQueue;
-	memset(check, false, sizeof(check) / sizeof(check[0]));
-
-	tempQueue.push(temp);
-	check[temp] = true;
-	while (!tempQueue.empty())
-	{
-		int tempNum = tempQueue.front();
-		tempQueue.pop();
-		cout << tempNum << ' ';
-		for (int i = 0; i < tempVector[tempNum].size(); i++)
-		{
-			if (!check[tempVector[tempNum][i]])
-			{
-				check[tempVector[tempNum][i]] = true;
-				tempQueue.push(tempVector[tempNum][i]);
-			}
-		}
-	}
+    }
+	
+	if(cnt == N)
+    {
+        result = true;
+        return;
+    }	
 }
 int main(void)
 {
-	ios_base::sync_with_stdio(false);
-	int tempN, tempM, tempV;
+    cin >> N >> M;
 
-	cin >> tempN >> tempM >> tempV;
+    for(int i = 0; i < M; ++i)
+    {
+        int tempA, tempB;
+        cin >> tempA >> tempB;
 
-	for (int i = 0; i < tempM; ++i)
-	{
-		int tempA, tempB;
-		cin >> tempA >> tempB;
+        tempV[tempA].push_back(tempB);
+        tempV[tempB].push_back(tempA);
+    }
 
-		tempVector[tempA].push_back(tempB);
-		tempVector[tempB].push_back(tempA);
-	}
-	for (int i = 0; i < tempN; i++)
-	{
-		sort(tempVector[i].begin(), tempVector[i].end());
-	}
-	DFS(tempV);
-	cout << '\n';
-	BFS(tempV);
-	cout << '\n';
-	return 0;
+	DFS(0);
+
+	cout << cnt << endl;
+	int temp = result ? 1 : 0;
+    cout << temp << '\n';
+    return 0;
 }

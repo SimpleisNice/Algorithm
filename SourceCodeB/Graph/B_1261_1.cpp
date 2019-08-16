@@ -9,6 +9,7 @@ int d[101][101];
 char map[101][101];
 const int posX[] = {0, 0, -1, 1};
 const int posY[] = {-1, 1, 0, 0};
+
 int main(void)
 {   
     cin.tie(0);

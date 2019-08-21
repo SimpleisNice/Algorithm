@@ -5,27 +5,26 @@ using namespace std;
 
 vector<int> tempV[2001];
 bool check[2001];
-int cnt = 1;
 int N, M;
 bool result;
-void DFS(int temp)
+void DFS(int temp, int cnt)
 {
-	check[temp] = true;
+    if(cnt == 5)
+    {
+        result = true;
+        return;
+    }	
+	
+    check[temp] = true;
     for(int i = 0; i < tempV[temp].size(); ++i)
     {
 		int num = tempV[temp][i];
 		if(!check[num])
 		{
-			DFS(num);
-			cnt++;
+			DFS(num, cnt + 1);
 		}
     }
-	
-	if(cnt == N)
-    {
-        result = true;
-        return;
-    }	
+    check[temp] = false;
 }
 int main(void)
 {
@@ -39,10 +38,13 @@ int main(void)
         tempV[tempA].push_back(tempB);
         tempV[tempB].push_back(tempA);
     }
-
-	DFS(0);
-
-	cout << cnt << endl;
+    for(int i = 0; i < N; ++i)
+    {
+        DFS(i, 1);
+        if(result)
+            break;
+    }
+	
 	int temp = result ? 1 : 0;
     cout << temp << '\n';
     return 0;

@@ -2,20 +2,40 @@
 #include <algorithm>
 using namespace std;
 
-
-long GetYear(int N, int M, int X, int Y)
+int value = 0;
+int GCD(int N, int M)
+{
+    while(M)
+    {
+        int temp = N;
+        N = M;
+        M = temp % M;
+    }
+    return N;
+}
+int LCM(int N, int M)
+{
+    int gcdValue = GCD(N,M);
+    return (N * M) / gcdValue; 
+}
+int GetYear(int N, int M, int X, int Y)
 {
     int tempN = 0;
+    value = LCM(N, M);
     if(N == 1 && M == 1 && X == 1 && Y == 1)
         return 1;
+
     while(true)
     {
-        if((tempN * M + X) % M == X && (tempN * M + X) % N == Y)
+        int temp = (tempN * M + X) % N;
+        if(temp == 0)
+            temp = N;
+        if(temp == Y)
         {
             return tempN * M + X;
         }
         ++tempN;
-        if(M * tempN >= 40000 * N *M)
+        if(M * tempN >= value)
             break;
     }
     return -1;
@@ -29,11 +49,13 @@ int main(void)
     int M, N, X, Y;
     cin >> T;
 
-    for(int i = 0; i < T; ++i)
+    while(T--)
     {
+        
         cin >> M >> N >> X >> Y;
 
-        long year = GetYear(N, M, X, Y);
+        int year = GetYear(N, M, X, Y);
+
         cout << year << '\n';
     }
 }

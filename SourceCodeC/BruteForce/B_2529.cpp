@@ -1,93 +1,54 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
-#include <climits>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-vector<int> useNum(10);
-vector<int> setNum;
-vector<char> inequality;
-void SettingNum(int K)
+int k;
+vector<char> inequality(9);
+vector<string> tempStr;
+bool check[10];
+
+bool CheckFunc(char tempA, char tempB, char op)
 {
-	for (int i = 0; i < K + 1; ++i)
+	if(op == '<')
+		return tempA < tempB ? true : false;
+	else
+		return tempA > tempB ? true : false;
+}
+void Go(int index, string num)
+{
+	if(index == k + 1)
 	{
-		useNum[i] = 1;
+		tempStr.push_back(num);
+		return;
 	}
 
-	for (int i = K + 1; i < 10; ++i)
+	for(int i = 0; i <= 9; ++i)
 	{
-		useNum[i] = 0;
+		if(check[i])	continue;
+
+		if(index == 0 || CheckFunc(num[index - 1], i + '0', inequality[index - 1]))
+		{
+			check[i] = true;
+			Go(index + 1, num + to_string(i));
+			check[i] = false;
+		}
 	}
 }
 int main(void)
 {
-	ios_base::sync_with_stdio(false);
 	cin.tie(0);
+	ios_base::sync_with_stdio(false);
 
-	int K;
-	string maxValue = "0";
-	string minValue = "99999";
-
-	cin >> K;
-	inequality.resize(K);
-	setNum.resize(K + 1);
-
-	for (int i = 0; i < K; ++i)
+	cin >> k;
+	for(int i = 0; i < k; ++i)
 	{
 		cin >> inequality[i];
 	}
-	SettingNum(K);
+	Go(0, "");
 
-	do
-	{
-		int temp = 0;
-		for (int i = 0; i < 10; ++i)
-		{
-			if (useNum[i] == 1)
-				setNum[temp++] = i;
-		}
-		do
-		{
-			string tempStr = "";
-            bool check = true;
-			for (int i = 0; i < K; ++i)
-			{
-				if (inequality[i] == '<')
-				{
-					if (setNum[i] > setNum[i + 1])
-					{   
-                        check = false;
-                        break;
-                    }
-				}
-				else
-				{
-					if (setNum[i] < setNum[i + 1])
-					{
-                        check = false;
-                        break;
-                    }
-				}
-				tempStr += to_string(setNum[i]);
-			}
-            if(check)
-			{    
-                tempStr += to_string(setNum[K]);
-                if (minValue > tempStr)
-			    {
-			    	minValue = tempStr;
-			    }
-			    if (maxValue < tempStr)
-			    {
-			    	maxValue = tempStr;
-			    }
-            }
-		} while (next_permutation(setNum.begin(), setNum.end()));
-
-	} while (prev_permutation(useNum.begin(), useNum.end()));
-
-    cout << maxValue << '\n' << minValue << '\n';
+	cout << tempStr.back() << '\n';
+	cout << tempStr.front() << '\n';
 	return 0;
 }

@@ -1,37 +1,45 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
 
-int xPos[] = {0, 0, -1, 1, -1, 1, -1, 1};
-int yPos[] = {-1, 1, 0, 0, -1, 1, 1, -1};
-int map[15][15];
+using namespace std;
+
+int n;
+int check_col[15];
+int check_line0[29];
+int check_line1[29];
+
+
+bool CheckFunc(int row, int col)
+{
+	if(check_col[col])	return false;
+	if(check_line0[row + col])	return false;
+	if(check_line1[row - col + n]) return false;
+
+	return true;
+}
+int Go(int row)
+{
+	if(row == n)
+		return 1;
+	
+	int cnt = 0;
+	for(int col = 0; col < n; ++col)
+	{
+		if(CheckFunc(row, col))
+		{
+			check_col[col] = true;
+			check_line0[row + col] = true;
+			check_line1[row - col + n] = true;
+			cnt += Go(row + 1);
+			check_col[col] = false;
+			check_line0[row + col] = false;
+			check_line1[row - col + n] = false;
+		}
+	}
+	return cnt;
+}
 int main(void)
 {
-	cin.tie(0);
-	ios_base::sync_with_stdio(false);
-	int N;
-	cin >> N;
-
-	vector<int> tempMap(N * N);
-
-	for(int i = 0; i < N; ++i)
-	{
-		tempMap[i] = 1;
-	}
-
-	do
-	{
-		// set map
-		for(int i = 0; i < N * N; ++i)
-		{
-			int x, y;
-			if(tempMap[i] == 1)
-			{
-				x = i / N;
-				y = i % N;
-			}
-		}	
-		// set check
-	}while(prev_permutation(tempMap.begin(), tempMap.end()));
+	cin >> n;
+	cout << Go(0) << '\n';
 	return 0;
 }

@@ -2,65 +2,69 @@
 
 using namespace std;
 
-
 int N;
-char map[10][10];
+int map[10][10];
 int tempArray[10];
 
-void Go(int index)
+bool CheckFunc(int index)
 {
-    if(index == N + 1)
+    int sum = 0;
+
+    for(int i = index; i >= 0; --i)
     {
-        return 0;
+        sum += tempArray[i];
+
+        if(map[i][index] == 0)
+        {
+            if(sum != 0)    return false;
+        }
+        else if(map[i][index] < 0)
+        {
+            if(sum >= 0)    return false;
+        }
+        else 
+            if(sum <= 0)    return false;
+    }
+    return true;
+}
+bool Go(int index)
+{
+    if(index == N)
+        return true;
+    if(map[index][index] == 0)
+    {
+        return CheckFunc(index) && Go(index + 1);
     }
 
-    for(int i = -10; i <= 10; ++i)
+    for(int i = 1; i <= 10; ++i)
     {
-        char tempChar;
-        if(i < 0)
-            tempChar = '-';
-        else if( i > 0)
-            tempChar = '+';
-        else    
-            tempChar = '0';
-        
-        if(map[index][index] == tempChar)
-            continue;
-        
-        tempArray[index] = i;
-        for(int i = 0; i < index; ++i)
-        {
-            int temp = 0;
-            for(int j = i; j < index; ++j)
-            {
-                temp += tempArray[
-            }
-        }
+        tempArray[index] = map[index][index] * i;
+        if(CheckFunc(index) && Go(index + 1))
+            return true;
     }
-
-    for(int i = 0; i < index; ++i)
-    {
-        for(int j = i; j < index; ++j)
-        {
-            
-        }
-    }
+    return false;
 }
 
 int main(void)
-{   cin.tie(0);
+{
     ios_base::sync_with_stdio(false);
-
     cin >> N;
-    int nLen = N * (N + 1) / 2;
 
     for(int i = 0; i < N; ++i)
     {
+        char tempChar;
         for(int j = i; j < N; ++j)
         {
-            cin >> map[i][j];
+            cin >> tempChar;
+            if(tempChar == '-') map[i][j] = -1;
+            else if(tempChar == '+') map[i][j] = + 1;
+            else map[i][j] = 0;
         }
     }
-    Go(0, 0);
+    Go(0);
+    for(int i = 0; i < N; ++i)
+    {
+        cout << tempArray[i] << " ";
+    }
     return 0;
 }

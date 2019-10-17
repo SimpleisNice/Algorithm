@@ -1,33 +1,36 @@
-#include <cstdio>
 #include <iostream>
-int d[10001];
-int nums[] = {1,2,3};
-void GetResult(int n)
-{
-    for(int j = 0; j < 3; ++j)
-    {
-        for(int i = 1; i <= n; ++i)
-        {
-            if(i - nums[j] >=0)
-                d[i] += d[i-nums[j]];
-        }
-    }
-}
+#include <vector>
+
+using namespace std;
+
+int d[10001] = {1,};
+int num[3] = {1,2,3};
 int main(void)
 {
+    cin.tie(0);
     int n;
-    scanf("%d", &n);
-
+    cin >> n;
+    vector<int> tempV(n);
+    for(int i=0; i<n; ++i)
+    {
+        cin >> tempV[i];
+    }
+    for(int i=0; i<3; ++i)
+    {
+        for(int j=1; j<=10000; ++j)
+        {
+            if(j - num[i] >= 0)
+            {
+                d[j] += d[j - num[i]];
+                
+            }
+        }
+    }
     
     for(int i=0; i<n; ++i)
     {
-        int m;
-        scanf("%d", &m);
-        std::fill_n(d, m, 0);
-        d[0] = 1;
-
-        GetResult(m);
-        printf("%d\n", d[m]);
+        cout << d[tempV[i]] << '\n';
     }
 
+    return 0;
 }

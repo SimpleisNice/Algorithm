@@ -1,132 +1,112 @@
 #include <iostream>
-#include <queue>
-#include <vector>
-#include <map>
+#include <deque>
 #include <cstring>
+#include <vector>
 #include <climits>
 using namespace std;
 
-char prison[101][101];
-int checkMap[101][101][2] = { 0, };	// move, door
-bool moveMap[101][101];
+char prison_map[102][102];
+int prison[102][102][3];
 
+int h, w;
+int movX[] = {0,0,-1,1};
+int movY[] = {-1,1,0,0};
+vector<pair<int,int>> prisoner;
 
-int posX[] = { 0,0,-1,1 };
-int posY[] = { -1,1,0,0 };
-
-int main(void)
+void BFS()
 {
-	int t;
-	cin >> t;
-	while (t--)
+	int index = 0;
+	while(!prisoner.empty())
 	{
-		int h, w, sum = 0;
-		cin >> h >> w;
+		int x = prisoner.back().first;
+		int y = prisoner.back().second;
+		prisoner.pop_back();
 
-		vector<pair<int, int>> criminals;
-		map<pair<int, int>, int> tempM;
-		for (int i = 0; i < h; ++i)
+		deque<pair<int, int>> tempQ;
+		prison[x][y][index] = 0;
+		tempQ.push_front(make_pair(x, y));
+
+		while(!tempQ.empty())
 		{
-			for (int j = 0; j < w; ++j)
+			int tempX = tempQ.front().first;
+			int tempY = tempQ.front().second;
+			
+			tempQ.pop_front();
+
+			for(int i=0; i<4; ++i)
 			{
-				cin >> prison[i][j];
+				int setX = tempX + movX[i];
+				int setY = tempY + movY[i];
 
-				if (prison[i][j] == '$')    criminals.push_back(make_pair(i, j));
-			}
-		}
-
-		while (!criminals.empty())
-		{
-			queue<pair<int, int>> tempQ;
-			vector<pair<int, int>> tempV;
-
-			tempQ.push(make_pair(criminals.back().first, criminals.back().second));
-			checkMap[criminals.back().first][criminals.back().second][0] = 0;
-			checkMap[criminals.back().first][criminals.back().second][1] = 0;
-
-			moveMap[criminals.back().first][criminals.back().second] = true;
-			criminals.pop_back();
-
-			while (!tempQ.empty())
-			{
-				int tempX = tempQ.front().first;
-				int tempY = tempQ.front().second;
-				tempQ.pop();
-
-				for (int i = 0; i < 4; ++i)
+				if(setX>=0 && setX<=h+1 && setY>=0 && setY<=w+1)
 				{
-					int x = tempX + posX[i];
-					int y = tempY + posY[i];
-
-					if (x < 0 || x >= h || y < 0 || y >= w)  continue;
-					if (prison[x][y] == '*')    continue;
-
-					if ((prison[x][y] == '.' || prison[x][y] == '$') && moveMap[x][y] == false)
-					{
-						checkMap[x][y][0] = checkMap[tempX][tempY][0] + 1;
-						checkMap[x][y][1] = checkMap[tempX][tempY][1];
-						moveMap[x][y] = true;
-						if (x == 0 || x == h - 1 || y == 0 || y == w - 1)
-						{	
-							if (tempM.count(make_pair(x, y)) == 0)
-								tempM.insert(make_pair(make_pair(x, y), checkMap[x][y][1]));
-							else
-								tempM[make_pair(x, y)] += checkMap[x][y][1];
-							continue;
-						}
-						tempQ.push(make_pair(x, y));
+					if(prison_map[setX][setY] == '*')
+						continue;
+					if(prison[setX][setY][index] == -1 && prison_map[setX][setY] == '#')
+					{	
+						prison[setX][setY][index] = prison[tempX][tempY][index] + 1;
+						tempQ.push_back(make_pair(setX, setY));
 					}
-					else if (prison[x][y] == '#' && moveMap[x][y] == false)
+					else if(prison[setX][setY][index] == -1)
 					{
-						if (checkMap[x][y][1] != 0 && checkMap[x][y][1] <= checkMap[tempX][tempY][1] + 1)
-						{	
-							if(checkMap[x][y][0] == checkMap[tempX][tempY][0] + 1)
-								checkMap[x][y][1] = checkMap[tempX][tempY][1];
-							else
-								checkMap[x][y][1] = checkMap[tempX][tempY][1] + 1;
-						}
-						else
-						{	
-							if(checkMap[x][y][0] == checkMap[tempX][tempY][0] + 1)
-								checkMap[x][y][1] = checkMap[tempX][tempY][1];
-							else
-								checkMap[x][y][1] = checkMap[tempX][tempY][1] + 1;
-						}
-						checkMap[x][y][0] = checkMap[tempX][tempY][0] + 1;
-						moveMap[x][y] = true;
-						if (x == 0 || x == h - 1 || y == 0 || y == w - 1)
-						{
-							if (tempM.count(make_pair(x, y)) == 0)
-								tempM.insert(make_pair(make_pair(x, y), checkMap[x][y][1]));
-							else
-								tempM[make_pair(x, y)] += checkMap[x][y][1];
-							continue;
-						}
-						tempQ.push(make_pair(x, y));
+						prison[setX][setY][index] = prison[tempX][tempY][index];
+						tempQ.push_front(make_pair(setX, setY));	
 					}
 				}
 			}
-			
-		for (int i = 0; i < h; ++i)
-		{
-			for (int j = 0; j < w; ++j)
-			{
-				cout << checkMap[i][j][1];
-			}
-			cout << '\n';
 		}
-		cout <<'\n';
-			memset(moveMap, false, sizeof(moveMap[0][0]) * 101 * 101);
-		}
-		sum = INT_MAX;
-		for (auto it = tempM.begin(); it != tempM.end(); ++it)
-		{
-			if (sum > it->second)
-				sum = it->second;
-		}
-		memset(checkMap, 0, sizeof(checkMap[0][0][0]) * 101 * 101 * 2);
-		cout << sum << '\n';
+		++index;
 	}
+}
+int main(void)
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	int t;
+	cin >> t;
 
+	while (t--)
+	{
+		cin >> h >> w;
+
+		memset(prison, -1, sizeof(prison));
+		prisoner.push_back(make_pair(0,0));
+		for (int i = 0; i <= h + 1; ++i)
+		{
+			if (i == 0 || i == h + 1)
+			{
+				for (int j = 0; j <= w + 1; ++j)
+				{
+					prison_map[i][j] = '.';
+				}
+			}
+			else
+			{
+				prison_map[i][0] = '.';
+				prison_map[i][w+1] = '.';
+				for (int j = 1; j <= w; ++j)
+				{
+					cin >> prison_map[i][j];
+					if(prison_map[i][j] == '$')	prisoner.push_back(make_pair(i, j));
+				}
+			}
+		}
+		BFS();
+
+		int minValue = INT_MAX;
+		for(int i=1; i<=h; ++i)
+		{
+			for(int j=1; j<=w; ++j)
+			{
+				if(prison_map[i][j] == '*')
+					continue;
+
+				int tempSum = prison[i][j][0]+prison[i][j][1]+prison[i][j][2];	
+				if(prison_map[i][j] == '#') tempSum -= 2;
+				if(minValue > tempSum) minValue = tempSum;
+			}
+		}
+		cout << minValue << '\n';
+	}
 	return 0;
 }

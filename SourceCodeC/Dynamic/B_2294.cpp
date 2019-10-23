@@ -4,7 +4,7 @@
 #include <algorithm>
 using namespace std;
 
-int d[10001] = {0,};
+long long d[10001] = {0,};
 
 int main(void)
 {
@@ -24,7 +24,7 @@ int main(void)
         d[i] = INT_MAX;
         for(int j=0; j<n; ++j)
         {
-            if(i - tempV[j] >= 0)
+            if(i - tempV[j] >= 0 && d[i - tempV[j]] != INT_MAX)
             {    
                 if(d[i] > d[i - tempV[j]] + 1)
                 {    
@@ -33,7 +33,7 @@ int main(void)
             }
         }
     }
-    d[k] = d[k] == INT_MAX ? -1 : d[k];
-    cout << d[k] << '\n';
+    if(d[k] == INT_MAX)     cout << "-1";
+    else    cout << d[k] << '\n';
     return 0;
 }

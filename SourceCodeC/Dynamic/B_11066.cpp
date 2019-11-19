@@ -1,59 +1,64 @@
 #include <iostream>
+#include <algorithm>
 #include <climits>
 #include <cstring>
 using namespace std;
 
-int d[501][501];
-int totalSum;
-int n;
-void Go(int k)
-{
-    if(k > n) return;
-    
-    Go(k + 1);
+int save_array[500][500];
+int num_array[500];
 
-    int sum = 0;
-    for(int i=k; i<=n; ++k)
-    {
-
-    }
-    for(int i=1; i<=k; ++i)
-    {
-        sum += d[i][1];
-    }
-    d[1][k] = sum;
-    sum = 0;
-
-    for(int j=k+1; j<=n; ++j)
-    {
-        sum += d[j][1];
-    }
-    d[k+1][n] = sum;
-    sum = d[1][k] + d[k+1][n];
-
-    if(sum < d[1][n])
-        d[1][n] = sum;
-        
-}
 int main(void)
 {
     int t;
     cin >> t;
-    while(t--)
+
+    while (t--)
     {
+        int n;
         cin >> n;
-        totalSum = 0;
-        d[1][n] = INT_MAX;
-
-        for(int i=1; i<=n; ++i)
+        memset(save_array, 0, sizeof(save_array));
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
         {
-            cin >> d[i][1];
-            totalSum += d[i][1];
-        }     
-        Go(1);
+            cin >> num_array[i];
+            sum += num_array[i];
+            save_array[i][i] = num_array[i];
+        }
 
-        cout << '\n' << d[1][n] + totalSum << '\n';   
-        memset(d, 0, sizeof(d));
+        for (int i = 0; i < n - 1; ++i)
+        {
+            save_array[i][i + 1] = save_array[i][i] + save_array[i + 1][i + 1];
+        }
+
+        for (int i = 2; i < n - 1; ++i)
+        {
+            save_array[0][i] = save_array[0][i - 1] + save_array[i - 1][i] - num_array[i - 1];
+        }
+
+        for (int i = n - 3; i > 0; --i)
+        {
+            save_array[i][n - 1] = save_array[i + 1][n - 1] + save_array[i][i + 1] - num_array[i + 1];
+        }
+
+        int min_value = INT_MAX;
+
+        for(int i=0; i<n-1; ++i)
+        {
+            int temp_num = save_array[0][i] + save_array[i+1][n-1];
+            int temp_a = 0;
+            int temp_b = 0;
+            for(int j=i; j>0; --j)
+            {
+                temp_a += save_array[0][i];
+            }
+            for(int j=i+1; j<n-1; ++j)
+            {
+                temp_b += save_array[j][n-1];
+            }
+
+            min_value = min(min_value, temp_num + temp_a + temp_b);
+        }
+        cout << min_value << '\n';
     }
     return 0;
 }

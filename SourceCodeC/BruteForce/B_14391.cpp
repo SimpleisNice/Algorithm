@@ -1,58 +1,65 @@
-#include <cstdio>
+#include <iostream>
 #include <algorithm>
-int a[4][4];
+#include <string>
 
-int n,m;
-int totalSum = 0;
+using namespace std;
 
+int paper[4][4];
 
 int main(void)
 {
-    scanf("%d %d",&n, &m);
+    cin.tie(0);
+    ios_base::sync_with_stdio(false);
+
+    int n,m;
+    string temp_s;
+
+    cin >> n >> m;
     for(int i=0; i<n; ++i)
     {
-        for(int j=0; j<m; ++j)
-            scanf("%1d", &a[i][j]);
+        cin >> temp_s;
+        for(int j=0; j<temp_s.length(); ++j)
+        {
+            paper[i][j] = temp_s[j] -'0';
+        }
     }
     int ans = 0;
-
-    for(int s=0; s<(1<<(n*m)); ++s)
+    for(int s=0; s<(1<<n*m); ++s)
     {
         int sum = 0;
         for(int i=0; i<n; ++i)
         {
-            int cur=0;
+            int temp_sum = 0;
             for(int j=0; j<m; ++j)
             {
-                int k=i*m+j;
-                if((s&(1<<k)) == 0)
-                    cur = cur * 10 + a[i][j];
-                else   
-                {
-                    sum += cur;
-                    cur = 0;
-                }
-            }
-            sum += cur;
-        }
-   
-        for(int j=0; j<m; ++j)
-        {
-            int cur=0;
-            for(int i=0; i<n; ++i)
-            {
-                int k= i*m+j;
-                if((s&(1<<k)) != 0)
-                    cur = cur * 10 + a[i][j];
+                int k = i*m + j;
+                if((s&(1<<k)) == 0) temp_sum = temp_sum * 10 + paper[i][j];
                 else
                 {
-                    sum +=cur;
-                    cur = 0;
+                    sum += temp_sum;
+                    temp_sum = 0;
                 }
             }
-            sum += cur;
+            sum += temp_sum;
         }
-        ans = std::max(ans, sum);
+        for(int i=0; i<m; ++i)
+        {
+            int temp_sum = 0;
+            for(int j=0; j<n; ++j)
+            {
+                int k = j*m + i;
+                if((s&(1<<k)) != 0) temp_sum = temp_sum * 10 + paper[j][i];
+                else
+                {
+                    sum += temp_sum;
+                    temp_sum = 0;
+                }
+            }
+            sum += temp_sum;
+        }
+
+        ans = max(ans, sum);
     }
-    printf("%d\n", ans);
+    cout << ans << '\n';
+    return 0;
 }

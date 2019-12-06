@@ -1,317 +1,170 @@
 #include <iostream>
 #include <algorithm>
-#define MAX_GOAL_MOVE 100000000
+#define MAX_MOVE 11
+
 using namespace std;
 
-char board_map[10][10];
-bool ball_move[10][10][2]; // red : 0, blue : 1
+char ball_map[10][10];
+bool ball_move[10][10][2];
+int move_x[] = { 0,0,-1,1 };
+int move_y[] = { -1,1,0,0 };
 
-
+int min_move = MAX_MOVE;
 int n, m;
-int min_move = MAX_GOAL_MOVE;
 
-
-void Go(pair<int,int>, pair<int,int>, int);
-
-void ball_move_up(const pair<int, int> red_pos, const pair<int, int> blue_pos, int move)
+bool move_check(int x, int y)
 {
-	pair<int, int> temp_red_pos = red_pos;
-	pair<int, int> temp_blue_pos = blue_pos;
-	bool check_blue_ball = false;
-	bool goal_check = false;
-	int index = 0;
-	
-	while (true)
+	if (x > 0 && x < n - 1 && y > 0 && y < m - 1)
+		return true;
+	return false;
+}
+void move(pair<int, int> red, pair<int, int> blue, int move_count, bool end)
+{
+	if (end)
 	{
-		if (board_map[temp_red_pos.first - 1 - index][temp_red_pos.second] != '#')
-		{
-			if (board_map[temp_red_pos.first - 1 - index][temp_red_pos.second] != 'B')
-				check_blue_ball = true;
-			if (board_map[temp_red_pos.first - 1 - index][temp_red_pos.second] == 'O')
-			{	
-				goal_check = true;
-				break;
-			}
-			++index;
-		}
-		else
-		{
-			temp_red_pos.first -= index;
-			break;
-		}
+		min_move = min(min_move, move_count);
+		return;
 	}
+	if (move_count >= MAX_MOVE)
+		return;
+	for (int i = 0; i < 4; ++i)
+	{
+		int index_r = 0;
 
-	if (check_blue_ball && !goal_check)
-	{
-		temp_blue_pos.first = temp_red_pos.first;
-		temp_red_pos.first = temp_blue_pos.first + 1;
-	}
-	else
-	{
-		index = 0;
+		bool r_pass_check = false;
+		bool r_goal_check = false;
+
 		while (true)
 		{
-			if (board_map[temp_blue_pos.first - 1 - index][temp_blue_pos.second] != '#')
+			int r_x = red.first + move_x[i] * index_r;
+			int r_y = red.second + move_y[i] * index_r;
+
+			if (move_check(r_x, r_y))
 			{
-				if (board_map[temp_blue_pos.first - 1 - index][temp_blue_pos.second] != 'O')
-					return;				
-				++index;
+				if (ball_map[r_x][r_y] == '#')
+				{
+					--index_r;
+					break;
+				}
+				if (r_x == blue.first && r_y == blue.second)
+					r_pass_check = true;
+				if (ball_map[r_x][r_y] == 'O')
+				{
+					r_goal_check = true;
+					break;
+				}
+				++index_r;
 			}
 			else
 			{
-				temp_blue_pos.first -= index;
+				--index_r;
 				break;
 			}
 		}
-	}
-	if(goal_check)
-	{
-		min_move = min(min_move, move + 1);
-		return;
-	}
-	if (ball_move[temp_red_pos.first][temp_red_pos.second][0] && ball_move[temp_blue_pos.first][temp_blue_pos.second][1])
-		return;
-	else
-	{
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = true;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = true;
-		Go(temp_red_pos, temp_blue_pos, move + 1);
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = false;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = false;
-	}
-}
-void ball_move_down(const pair<int, int> red_pos, const pair<int, int> blue_pos, int move)
-{
-	pair<int, int> temp_red_pos = red_pos;
-	pair<int, int> temp_blue_pos = blue_pos;
-	bool check_blue_ball = false;
-	bool goal_check = false;
-	int index = 0;
-	
-	while (true)
-	{
-		if (board_map[temp_red_pos.first + 1 + index][temp_red_pos.second] != '#')
+
+		int index_b = 0;
+		bool b_pass_check = false;
+		bool b_goal_check = false;
+
+		if (r_pass_check)
 		{
-			if (board_map[temp_red_pos.first + 1 + index][temp_red_pos.second] != 'B')
-				check_blue_ball = true;
-			if (board_map[temp_red_pos.first + 1 + index][temp_red_pos.second] == 'O')
-			{	
-				goal_check = true;
-				break;
-			}
-			++index;
+			if (r_goal_check)
+				continue;
+			index_b = index_r;
+			index_r -= 1;
 		}
 		else
 		{
-			temp_red_pos.first += index;
-			break;
-		}
-	}
+			while (true)
+			{
+				int b_x = blue.first + move_x[i] * index_b;
+				int b_y = blue.second + move_y[i] * index_b;
 
-	if (check_blue_ball && !goal_check)
-	{
-		temp_blue_pos.first = temp_red_pos.first;
-		temp_red_pos.first = temp_blue_pos.first - 1;
-	}
-	else
-	{
-		index = 0;
-		while (true)
-		{
-			if (board_map[temp_blue_pos.first + 1 + index][temp_blue_pos.second] != '#')
-			{
-				if (board_map[temp_blue_pos.first + 1 + index][temp_blue_pos.second] != 'O')
-					return;				
-				++index;
+				if (move_check(b_x, b_y))
+				{
+					if (ball_map[b_x][b_y] == '#')
+					{
+						--index_b;
+						break;
+					}
+					if (b_x == red.first && b_y == red.second)
+						b_pass_check = true;
+					if (ball_map[b_x][b_y] == 'O')
+					{
+						b_goal_check = true;
+						break;
+					}
+					++index_b;
+				}
+				else
+				{
+					--index_b;
+					break;
+				}
 			}
-			else
+			if (b_pass_check)
 			{
-				temp_blue_pos.first += index;
-				break;
+				index_r = index_b;
+				index_b -= 1;
 			}
 		}
-	}
-	if(goal_check)
-	{
-		min_move = min(min_move, move + 1);
-		return;
-	}
-	if (ball_move[temp_red_pos.first][temp_red_pos.second][0] && ball_move[temp_blue_pos.first][temp_blue_pos.second][1])
-		return;
-	else
-	{
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = true;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = true;
-		Go(temp_red_pos, temp_blue_pos, move + 1);
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = false;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = false;
-	}
-}
-void ball_move_left(const pair<int, int> red_pos, const pair<int, int> blue_pos, int move)
-{
-	pair<int, int> temp_red_pos = red_pos;
-	pair<int, int> temp_blue_pos = blue_pos;
-	bool check_blue_ball = false;
-	bool goal_check = false;
-	int index = 0;
-	
-	while (true)
-	{
-		if (board_map[temp_red_pos.first][temp_red_pos.second - 1 - index] != '#')
+		if (b_goal_check)
+			continue;
+		if (r_goal_check)
 		{
-			if (board_map[temp_red_pos.first][temp_red_pos.second - 1 - index] != 'B')
-				check_blue_ball = true;
-			if (board_map[temp_red_pos.first][temp_red_pos.second - 1 - index] == 'O')
-			{	
-				goal_check = true;
-				break;
-			}
-			++index;
+			move(red, blue, move_count + 1, true);
+		}
+		if (ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
+			continue;
+		else if (!ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
+		{
+			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = true;
+			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
+			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = false;
+		}
+		else if (ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && !ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
+		{
+			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = true;
+			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
+			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = false;
 		}
 		else
 		{
-			temp_red_pos.second -= index;
-			break;
+			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = true;
+			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = true;
+			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
+			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = false;
+			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = false;
 		}
-	}
-
-	if (check_blue_ball && !goal_check)
-	{
-		temp_blue_pos.second = temp_red_pos.second;
-		temp_red_pos.second = temp_blue_pos.second + 1;
-	}
-	else
-	{
-		index = 0;
-		while (true)
-		{
-			if (board_map[temp_blue_pos.first][temp_blue_pos.second - 1 - index] != '#')
-			{
-				if (board_map[temp_blue_pos.first][temp_blue_pos.second - 1 - index] != 'O')
-					return;				
-				++index;
-			}
-			else
-			{
-				temp_blue_pos.second -= index;
-				break;
-			}
-		}
-	}
-	if(goal_check)
-	{
-		min_move = min(min_move, move + 1);
-		return;
-	}
-	if (ball_move[temp_red_pos.first][temp_red_pos.second][0] && ball_move[temp_blue_pos.first][temp_blue_pos.second][1])
-		return;
-	else
-	{
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = true;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = true;
-		Go(temp_red_pos, temp_blue_pos, move + 1);
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = false;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = false;
 	}
 }
-void ball_move_right(const pair<int, int> red_pos, const pair<int, int> blue_pos, int move)
-{
-	pair<int, int> temp_red_pos = red_pos;
-	pair<int, int> temp_blue_pos = blue_pos;
-	bool check_blue_ball = false;
-	bool goal_check = false;
-	int index = 0;
-	
-	while (true)
-	{
-		if (board_map[temp_red_pos.first][temp_red_pos.second + 1 + index] != '#')
-		{
-			if (board_map[temp_red_pos.first][temp_red_pos.second + 1 + index] != 'B')
-				check_blue_ball = true;
-			if (board_map[temp_red_pos.first][temp_red_pos.second + 1 + index] == 'O')
-			{	
-				goal_check = true;
-				break;
-			}
-			++index;
-		}
-		else
-		{
-			temp_red_pos.second += index;
-			break;
-		}
-	}
-
-	if (check_blue_ball && !goal_check)
-	{
-		temp_blue_pos.second = temp_red_pos.second;
-		temp_red_pos.second = temp_blue_pos.second - 1;
-	}
-	else
-	{
-		index = 0;
-		while (true)
-		{
-			if (board_map[temp_blue_pos.first][temp_blue_pos.second + 1 + index] != '#')
-			{
-				if (board_map[temp_blue_pos.first][temp_blue_pos.second + 1 + index] != 'O')
-					return;				
-				++index;
-			}
-			else
-			{
-				temp_blue_pos.second += index;
-				break;
-			}
-		}
-	}
-	if(goal_check)
-	{
-		min_move = min(min_move, move + 1);
-		return;
-	}
-	if (ball_move[temp_red_pos.first][temp_red_pos.second][0] && ball_move[temp_blue_pos.first][temp_blue_pos.second][1])
-		return;
-	else
-	{
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = true;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = true;
-		Go(temp_red_pos, temp_blue_pos, move + 1);
-		ball_move[temp_red_pos.first][temp_red_pos.second][0] = false;
-		ball_move[temp_blue_pos.first][temp_blue_pos.second][1] = false;
-	}
-}
-
-void Go(const pair<int, int> red_pos, const pair<int, int> blue_pos, int move)
-{
-	ball_move_up(red_pos, blue_pos, move);
-	ball_move_down(red_pos, blue_pos, move);
-	ball_move_left(red_pos, blue_pos, move);
-	ball_move_right(red_pos, blue_pos, move);
-}
-
 int main(void)
 {
-
+	pair<int, int> ball_pos[2];
 	cin >> n >> m;
-	pair<int, int> item_pos[2];
-	
+
 	for (int i = 0; i < n; ++i)
 	{
 		for (int j = 0; j < m; ++j)
 		{
-			cin >> board_map[i][j];
-			if (board_map[i][j] == '.' || board_map[i][j] == '#')
-				continue;
+			cin >> ball_map[i][j];
 
-			if (board_map[i][j] == 'R')
-				item_pos[0] = make_pair(i, j);
-			else if (board_map[i][j] == 'B')
-				item_pos[1] = make_pair(i, j);
+			if (ball_map[i][j] == '#' || ball_map[i][j] == '.' || ball_map[i][j] == 'O')
+				continue;
+			if (ball_map[i][j] == 'R')
+			{
+				ball_pos[0] = make_pair(i, j);
+				ball_move[i][j][0] = true;
+			}
+			if (ball_map[i][j] == 'B')
+			{
+				ball_pos[1] = make_pair(i, j);
+				ball_move[i][j][1] = true;
+			}
 		}
 	}
 
-	Go(item_pos[0], item_pos[1], 0);
+	move(ball_pos[0], ball_pos[1], 0, false);
 
 	cout << min_move << '\n';
 	return 0;

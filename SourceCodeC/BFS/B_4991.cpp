@@ -1,135 +1,117 @@
+#include <iostream>
 #include <queue>
 #include <vector>
-#include <iostream>
-#include <cstring>
 #include <algorithm>
-#include <tuple>
 #include <map>
+#include <cstring>
 
 using namespace std;
 
-char room_map[21][21];
-int room_move[21][21];
+map<pair<int, int>, int> point_pos;
 
-int h, w;
-int mov_x[] = {0, 0, -1, 1};
-int mov_y[] = {-1, 1, 0, 0};
+char room_map[20][20];
+int move_check[20][20];
+int move_count[12][12];
 
-int get_short_distance(int pos_x, int pos_y, vector<pair<int, int>> &dirty_pos, map<tuple<int, int, int, int>, int> &d_pos)
+int move_x[] = {0, 0, -1, 1};
+int move_y[] = {-1, 1, 0, 0};
+
+int w, h;
+
+int BFS()
 {
-    int user_x = pos_x;
-    int user_y = pos_y;
-    int move_value = 0;
-
-    for (int i = 0; i < dirty_pos.size(); ++i)
+    queue<pair<int, int>> temp_q;
+    memset(move_count, -1, sizeof(move_count));
+    for (auto it = point_pos.begin(); it != point_pos.end(); ++it)
     {
+        int index = it->second;
+        temp_q.push(make_pair(it->first.first, it->first.second));
 
-        int dirty_x = dirty_pos[i].first;
-        int dirty_y = dirty_pos[i].second;
+        memset(move_check, -1, sizeof(move_check));
+        move_check[it->first.first][it->first.second] = 0;
+        move_count[index][index] = 0;
 
-        if (d_pos.count(make_tuple(user_x, user_y, dirty_x, dirty_y)) || d_pos.count(make_tuple(dirty_x, dirty_y, user_x, user_y)))
+        while (!temp_q.empty())
         {
-            room_move[dirty_x][dirty_y] = d_pos[make_tuple(user_x, user_y, dirty_x, dirty_y)];
-        }
-        else
-        {
-            memset(room_move, -1, sizeof(room_move));
-            bool check_move = false;
+            int x = temp_q.front().first;
+            int y = temp_q.front().second;
+            temp_q.pop();
 
-            queue<pair<int, int>> temp_q;
-            temp_q.push(make_pair(user_x, user_y));
-            room_move[user_x][user_y] = 0;
-
-            while (!temp_q.empty())
+            for (int i = 0; i < 4; ++i)
             {
-                int temp_x = temp_q.front().first;
-                int temp_y = temp_q.front().second;
-                temp_q.pop();
+                int pos_x = move_x[i] + x;
+                int pos_y = move_y[i] + y;
 
-                for (int i = 0; i < 4; ++i)
+                if (pos_x >= 0 && pos_x < h && pos_y >= 0 && pos_y < w)
                 {
-                    int x = temp_x + mov_x[i];
-                    int y = temp_y + mov_y[i];
-
-                    if (x >= 0 && x < h && y >= 0 && y < w)
+                    if (room_map[pos_x][pos_y] == 'x')
+                        continue;
+                    if (move_check[pos_x][pos_y] == -1)
                     {
-                        if (room_map[x][y] == 'x')
-                            continue;
-                        if (room_move[x][y] == -1)
+                        move_check[pos_x][pos_y] = move_check[x][y] + 1;
+                        if (room_map[pos_x][pos_y] == 'o' || room_map[pos_x][pos_y] == '*')
                         {
-                            room_move[x][y] = room_move[temp_x][temp_y] + 1;
-                            temp_q.push(make_pair(x, y));
-
-                            if (room_map[x][y] == '*' && x == dirty_x && y == dirty_y)
-                            {
-                                check_move = true;
-                                d_pos.insert(make_pair(make_tuple(user_x, user_y, dirty_x, dirty_y), room_move[x][y]));
-                                d_pos.insert(make_pair(make_tuple(dirty_x, dirty_y, user_x, user_y), room_move[x][y]));
-                            }
+                            move_count[index][point_pos[make_pair(pos_x, pos_y)]] = move_check[pos_x][pos_y];
                         }
+                        temp_q.push(make_pair(pos_x, pos_y));
                     }
                 }
-
-                if (check_move)
-                    break;
             }
         }
-        user_x = dirty_x;
-        user_y = dirty_y;
-        move_value += room_move[dirty_x][dirty_y];
-
-        cout << room_move[dirty_x][dirty_y] << "\t";
+        for (int i = 0; i < point_pos.size(); ++i)
+        {
+            if (move_count[index][i] == -1)
+                return -1;
+        }
     }
-    cout << '\n';
-    return move_value;
+    return 0;
 }
 int main(void)
 {
     cin.tie(0);
     ios_base::sync_with_stdio(false);
+
     while (true)
     {
-        int user_x, user_y;
+        int index = 0;
+        vector<int> temp_vector(1);
         cin >> w >> h;
-
-        if (h == 0 && w == 0)
+        if (w == 0 && h == 0)
             break;
-
-        vector<pair<int, int>> dirty_pos;
-        map<tuple<int, int, int, int>, int> d_pos;
-
         for (int i = 0; i < h; ++i)
         {
+            cin >> room_map[i];
+
             for (int j = 0; j < w; ++j)
             {
-                cin >> room_map[i][j];
-
-                if (room_map[i][j] == '*')
-                {
-                    dirty_pos.push_back(make_pair(i, j));
-                }
-                else if (room_map[i][j] == 'o')
-                {
-                    user_x = i;
-                    user_y = j;
-                }
+                if (room_map[i][j] == '.' || room_map[i][j] == 'x')
+                    continue;
+                if(room_map[i][j] == 'o')
+                    temp_vector[0] = index;
+                else
+                    temp_vector.push_back(index);
+                point_pos.insert(make_pair(make_pair(i, j), index++));
             }
         }
-
-        sort(dirty_pos.begin(), dirty_pos.end());
-
-        int min_value = -1;
-        do
+        if (BFS() == -1)
+            cout << -1 << '\n';
+        else
         {
-            int move_value = get_short_distance(user_x, user_y, dirty_pos, d_pos);
-            if(move_value == -1)    break;
-            if (min_value == -1 || min_value > move_value)
+            int min_value = -1;
+            int item_size = temp_vector.size();
+            do
             {
-                min_value = move_value;
-            }
-
-        } while (next_permutation(dirty_pos.begin(), dirty_pos.end()));
-
-        cout << min_value << '\n';
+                int value = 0;
+                for (int i = 0; i < item_size - 1; ++i)
+                {
+                    value += move_count[temp_vector[i]][temp_vector[i + 1]];
+                }
+                if (min_value == -1 || min_value > value)
+                    min_value = value;
+            } while (next_permutation(temp_vector.begin() + 1, temp_vector.end()));
+            cout << min_value << '\n';
+        }
+        point_pos.clear();
     }
+    return 0;
 }

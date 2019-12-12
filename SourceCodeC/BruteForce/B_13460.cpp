@@ -1,171 +1,152 @@
 #include <iostream>
 #include <algorithm>
-#define MAX_MOVE 11
 
 using namespace std;
 
-char ball_map[10][10];
-bool ball_move[10][10][2];
-int move_x[] = { 0,0,-1,1 };
-int move_y[] = { -1,1,0,0 };
-
-int min_move = MAX_MOVE;
 int n, m;
+char game_map[10][10];
+bool ball_move[10][10][2];
+int move_index = -1;
 
-bool move_check(int x, int y)
+int move_x[] = { 0, 0, -1, 1 };
+int move_y[] = { -1, 1, 0, 0 };
+void move_ball(pair<int, int> red, pair<int, int> blue, int move_count)
 {
-	if (x > 0 && x < n - 1 && y > 0 && y < m - 1)
-		return true;
-	return false;
-}
-void move(pair<int, int> red, pair<int, int> blue, int move_count, bool end)
-{
-	if (end)
-	{
-		min_move = min(min_move, move_count);
+	if (move_count > 10)
 		return;
-	}
-	if (move_count >= MAX_MOVE)
-		return;
+
 	for (int i = 0; i < 4; ++i)
 	{
-		int index_r = 0;
+		pair<int, int> temp_red = red;
+		pair<int, int> temp_blue = blue;
+		int red_index = 0;
+		int blue_index = 0;
 
-		bool r_pass_check = false;
-		bool r_goal_check = false;
+		bool red_pass = false, red_end = false;
+		bool blue_pass = false, blue_end = false;
 
 		while (true)
 		{
-			int r_x = red.first + move_x[i] * index_r;
-			int r_y = red.second + move_y[i] * index_r;
+			int x = temp_red.first + move_x[i] * red_index;
+			int y = temp_red.second + move_y[i] * red_index;
 
-			if (move_check(r_x, r_y))
+			if (x <= 0 || x >= n - 1 || y <= 0 || y >= m - 1)
+				break;
+			if (game_map[x][y] == '#')
+				break;
+			if (x == blue.first && y == blue.second)
+				red_pass = true;
+			if (game_map[x][y] == 'O')
+				red_end = true;
+
+			++red_index;
+		}
+		--red_index;
+
+		temp_red.first = red.first +  move_x[i] * red_index;
+		temp_red.second = red.second + move_y[i] * red_index;
+
+		if (red_pass)
+		{
+			temp_blue.first = temp_red.first;
+			temp_blue.second = temp_red.second;
+			temp_red.first = red.first + move_x[i] * (red_index - 1);
+			temp_red.second = red.second + move_y[i] * (red_index - 1);
+		}
+		else
+		{	// blue move
+			while (true)
 			{
-				if (ball_map[r_x][r_y] == '#')
+				int x = temp_blue.first + move_x[i] * blue_index;
+				int y = temp_blue.second + move_y[i] * blue_index;
+
+				if (x <= 0 || x >= n - 1 || y <= 0 || y >= m - 1)
+					break;
+				if (game_map[x][y] == '#')
+					break;
+				if (x == red.first && y == red.second)
+					blue_pass = true;
+				if (game_map[x][y] == 'O')
 				{
-					--index_r;
+					blue_end = true;
 					break;
 				}
-				if (r_x == blue.first && r_y == blue.second)
-					r_pass_check = true;
-				if (ball_map[r_x][r_y] == 'O')
-				{
-					r_goal_check = true;
-					break;
-				}
-				++index_r;
+				++blue_index;
+			}
+			--blue_index;
+
+			temp_blue.first = blue.first + move_x[i] * blue_index;
+			temp_blue.second = blue.second + move_y[i] * blue_index;
+			if (blue_pass)
+			{
+				temp_blue.first = blue.first + move_x[i] * (blue_index - 1);
+				temp_blue.second = blue.second + move_y[i] * (blue_index - 1);
+			}
+		}
+
+		if (red_end && !blue_end)
+		{
+			if (move_index == -1 || move_index > move_count)
+				move_index = move_count;
+			continue;
+		}
+		else if (blue_end)
+			continue;
+
+		if (ball_move[temp_red.first][temp_red.second][0] && ball_move[temp_blue.first][temp_blue.second][1])
+			continue;
+		if (ball_move[temp_red.first][temp_red.second][0])
+		{
+			ball_move[temp_blue.first][temp_blue.second][1] = true;
+			move_ball(make_pair(temp_red.first, temp_red.second), make_pair(temp_blue.first, temp_blue.second), move_count + 1);
+			ball_move[temp_blue.first][temp_blue.second][1] = false;
+		}
+		else
+		{
+			if (ball_move[temp_blue.first][temp_blue.second][1])
+			{
+				ball_move[temp_red.first][temp_red.second][0] = true;
+				move_ball(make_pair(temp_red.first, temp_red.second), make_pair(temp_blue.first, temp_blue.second), move_count + 1);
+				ball_move[temp_red.first][temp_red.second][0] = false;
 			}
 			else
 			{
-				--index_r;
-				break;
+				ball_move[temp_red.first][temp_red.second][0] = true;
+				ball_move[temp_blue.first][temp_blue.second][1] = true;
+				move_ball(make_pair(temp_red.first, temp_red.second), make_pair(temp_blue.first, temp_blue.second), move_count + 1);
+				ball_move[temp_red.first][temp_red.second][0] = false;
+				ball_move[temp_blue.first][temp_blue.second][1] = false;
 			}
-		}
-
-		int index_b = 0;
-		bool b_pass_check = false;
-		bool b_goal_check = false;
-
-		if (r_pass_check)
-		{
-			if (r_goal_check)
-				continue;
-			index_b = index_r;
-			index_r -= 1;
-		}
-		else
-		{
-			while (true)
-			{
-				int b_x = blue.first + move_x[i] * index_b;
-				int b_y = blue.second + move_y[i] * index_b;
-
-				if (move_check(b_x, b_y))
-				{
-					if (ball_map[b_x][b_y] == '#')
-					{
-						--index_b;
-						break;
-					}
-					if (b_x == red.first && b_y == red.second)
-						b_pass_check = true;
-					if (ball_map[b_x][b_y] == 'O')
-					{
-						b_goal_check = true;
-						break;
-					}
-					++index_b;
-				}
-				else
-				{
-					--index_b;
-					break;
-				}
-			}
-			if (b_pass_check)
-			{
-				index_r = index_b;
-				index_b -= 1;
-			}
-		}
-		if (b_goal_check)
-			continue;
-		if (r_goal_check)
-		{
-			move(red, blue, move_count + 1, true);
-		}
-		if (ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
-			continue;
-		else if (!ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
-		{
-			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = true;
-			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
-			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = false;
-		}
-		else if (ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] && !ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1])
-		{
-			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = true;
-			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
-			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = false;
-		}
-		else
-		{
-			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = true;
-			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = true;
-			move(make_pair(red.first + move_x[i] * index_r, red.second + move_y[i] * index_r), make_pair(blue.first + move_x[i] * index_b, blue.second + move_y[i] * index_b), move_count + 1, false);
-			ball_move[red.first + move_x[i] * index_r][red.second + move_y[i] * index_r][0] = false;
-			ball_move[blue.first + move_x[i] * index_b][blue.second + move_y[i] * index_b][1] = false;
 		}
 	}
 }
 int main(void)
 {
-	pair<int, int> ball_pos[2];
+	cin.tie(0);
+	ios_base::sync_with_stdio(false);
+	pair<int, int> red, blue;
 	cin >> n >> m;
-
 	for (int i = 0; i < n; ++i)
 	{
+		cin >> game_map[i];
 		for (int j = 0; j < m; ++j)
 		{
-			cin >> ball_map[i][j];
-
-			if (ball_map[i][j] == '#' || ball_map[i][j] == '.' || ball_map[i][j] == 'O')
-				continue;
-			if (ball_map[i][j] == 'R')
+			if (game_map[i][j] == 'R')
 			{
-				ball_pos[0] = make_pair(i, j);
+				red = make_pair(i, j);
 				ball_move[i][j][0] = true;
 			}
-			if (ball_map[i][j] == 'B')
+			else if (game_map[i][j] == 'B')
 			{
-				ball_pos[1] = make_pair(i, j);
+				blue = make_pair(i, j);
 				ball_move[i][j][1] = true;
 			}
 		}
 	}
 
-	move(ball_pos[0], ball_pos[1], 0, false);
+	move_ball(red, blue, 1);
 
-	cout << min_move << '\n';
+	cout << move_index << '\n';
+
 	return 0;
 }

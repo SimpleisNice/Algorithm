@@ -8,8 +8,8 @@ char game_map[10][10];
 bool ball_move[10][10][2];
 int move_index = -1;
 
-int move_x[] = { 0, 0, -1, 1 };
-int move_y[] = { -1, 1, 0, 0 };
+int move_x[] = {0, 0, -1, 1};
+int move_y[] = {-1, 1, 0, 0};
 void move_ball(pair<int, int> red, pair<int, int> blue, int move_count)
 {
 	if (move_count > 10)
@@ -42,56 +42,55 @@ void move_ball(pair<int, int> red, pair<int, int> blue, int move_count)
 			++red_index;
 		}
 		--red_index;
-
-		temp_red.first = red.first +  move_x[i] * red_index;
+		temp_red.first = red.first + move_x[i] * red_index;
 		temp_red.second = red.second + move_y[i] * red_index;
 
-		if (red_pass)
+		while (true)
+		{
+			int x = temp_blue.first + move_x[i] * blue_index;
+			int y = temp_blue.second + move_y[i] * blue_index;
+
+			if (x <= 0 || x >= n - 1 || y <= 0 || y >= m - 1)
+				break;
+			if (game_map[x][y] == '#')
+				break;
+			if (x == red.first && y == red.second)
+				blue_pass = true;
+			if (game_map[x][y] == 'O')
+			{
+				blue_end = true;
+				break;
+			}
+			++blue_index;
+		}
+		--blue_index;
+		temp_blue.first = blue.first + move_x[i] * blue_index;
+		temp_blue.second = blue.second + move_y[i] * blue_index;
+
+		// end check
+		if(blue_end)
+			continue;
+		else if(red_end)
+		{
+			if (move_index == -1 || move_index > move_count)
+				move_index = move_count;
+			continue;
+		}
+		// pass check
+		if(blue_pass)
+		{
+			temp_red.first = blue.first + move_x[i] * blue_index;
+			temp_red.second = blue.second + move_y[i] * blue_index;
+			temp_blue.first = blue.first + move_x[i] * (blue_index - 1);
+			temp_blue.second = blue.second + move_y[i] * (blue_index - 1);
+		}
+		else if(red_pass)
 		{
 			temp_blue.first = temp_red.first;
 			temp_blue.second = temp_red.second;
 			temp_red.first = red.first + move_x[i] * (red_index - 1);
 			temp_red.second = red.second + move_y[i] * (red_index - 1);
 		}
-		else
-		{	// blue move
-			while (true)
-			{
-				int x = temp_blue.first + move_x[i] * blue_index;
-				int y = temp_blue.second + move_y[i] * blue_index;
-
-				if (x <= 0 || x >= n - 1 || y <= 0 || y >= m - 1)
-					break;
-				if (game_map[x][y] == '#')
-					break;
-				if (x == red.first && y == red.second)
-					blue_pass = true;
-				if (game_map[x][y] == 'O')
-				{
-					blue_end = true;
-					break;
-				}
-				++blue_index;
-			}
-			--blue_index;
-
-			temp_blue.first = blue.first + move_x[i] * blue_index;
-			temp_blue.second = blue.second + move_y[i] * blue_index;
-			if (blue_pass)
-			{
-				temp_blue.first = blue.first + move_x[i] * (blue_index - 1);
-				temp_blue.second = blue.second + move_y[i] * (blue_index - 1);
-			}
-		}
-
-		if (red_end && !blue_end)
-		{
-			if (move_index == -1 || move_index > move_count)
-				move_index = move_count;
-			continue;
-		}
-		else if (blue_end)
-			continue;
 
 		if (ball_move[temp_red.first][temp_red.second][0] && ball_move[temp_blue.first][temp_blue.second][1])
 			continue;

@@ -126,7 +126,7 @@ int main(void)
 		}
 	}
 
-	if (minMove == INT_MAX || minCount > 10)
+	if (minMove == INT_MAX)
 		minMove = -1;
 	cout << minMove << '\n';
 	return 0;

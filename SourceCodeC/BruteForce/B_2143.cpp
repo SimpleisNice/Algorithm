@@ -5,8 +5,8 @@
 // 부분 배열의 합을 통해 결과 탐색
 
 using namespace std;
-long long tempArrayA[1000];
-long long tempArrayB[1000];
+long long tempArrayA[1001];
+long long tempArrayB[1001];
 long long t;
 int n, m;
 vector<long long> tempVectorA;
@@ -58,11 +58,11 @@ int main(void)
         long long tempValue = tempVectorA[tempAIndex] + tempVectorB[tempBIndex];
         if (tempValue == t)
         {
-            int valueA = 1;
-            int valueB = 1;
+            long long valueA = 1;
+            long long valueB = 1;
             while (true)
             {
-                if (tempAIndex + valueA < tempVectorA.size() - 1 && tempVectorA[tempAIndex] == tempVectorA[tempAIndex + valueA])
+                if (tempAIndex + valueA < tempVectorA.size() && tempVectorA[tempAIndex] == tempVectorA[tempAIndex + valueA])
                     ++valueA;
                 else
                     break;

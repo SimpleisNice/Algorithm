@@ -2,17 +2,9 @@
 
 using namespace std;
 
-long long test_case[5001];
+int testCase[101];
+long long bracketList[2501];
 
-void get_L()
-{
-    test_case[2] = 1;
-    test_case[4] = 2;
-    for(int i=6; i<=5000; i+=2)
-    {
-        test_case[i] = (test_case[i -2] * 2 + test_case[i - 4]) % 1000000007;
-    }
-}
 int main(void)
 {
     cin.tie(0);
@@ -20,14 +12,30 @@ int main(void)
     int t;
     cin >> t;
 
-    get_L();
-    while(t--)
+    for(int i=1; i<=t; ++i)
     {
-        int temp_num;
-        cin >> temp_num;
-
-        cout << test_case[temp_num] << '\n';
+        cin >> testCase[i];
     }
 
-    return 0;
+    bracketList[0] = 1;
+    bracketList[1] = 1;
+    bracketList[2] = 2;
+
+    for(int i=3; i<=2500; ++i)
+    {
+        long long sum = 0;
+        for(int j=1; j<=i; ++j)
+        {
+            sum += (bracketList[j-1] * bracketList[i-j]) %  1000000007; 
+        }
+        bracketList[i] = sum % 1000000007;
+    }
+
+    for(int i=1; i<=t; ++i)
+    {
+        if(testCase[i]%2 == 0)
+            cout << bracketList[testCase[i]/2] << '\n';
+        else
+            cout << 0 << '\n';
+    }
 }

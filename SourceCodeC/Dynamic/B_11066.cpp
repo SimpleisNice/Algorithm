@@ -1,36 +1,63 @@
 #include <iostream>
 #include <algorithm>
+#include <cstring>
+#include <climits>
 
 using namespace std;
 
-int temp_array[500][500];
-int temp_item[500];
+int sumBook[501][501];
+int k;
+
+int getMinValue(int start, int end)
+{
+    if(start == end)
+        return 0;
+    if(sumBook[start][end] != INT_MAX)
+        return sumBook[start][end]; 
+        
+    int sum = 0;
+    for(int i=start; i<=end; ++i)
+    {
+        sum += sumBook[i][i];
+    }
+    for(int i=start; i<end; ++i)
+    {
+        sumBook[start][end] = min(sumBook[start][end], getMinValue(start, i) + getMinValue(i + 1, end));
+    }
+
+    return sumBook[start][end] += sum;
+}
 int main(void)
 {
+    cin.tie(0);
+    ios_base::sync_with_stdio(false);
     int t;
     cin >> t;
 
-    while(t--)
+    while (t--)
     {
-        int n;
-        cin >> n;
+        cin >> k;
+        int sum = 0;
+
+
+        for(int i=1; i<=k; ++i)
+        {
+           for(int j=1; j<=k; ++j){
+               sumBook[i][j] = INT_MAX;
+           }
+        }
+
+        for (int i = 1; i <= k; ++i)
+        {
+            cin >> sumBook[i][i];
+        }
+        for(int i=1; i<k; ++i)
+        {
+            sumBook[i][i+1] = sumBook[i][i] + sumBook[i+1][i+1];
+        }
         
-        for(int i=0; i<n; ++i)
-        {
-            cin >> temp_item[i];
-            temp_array[i][i] = temp_item[i];
-        }
-
-        for(int i=0; i<n-1; ++i)
-        {
-            temp_array[i][i+1] = temp_item[i] + temp_item[i + 1];
-        }
-
-        for(int i=2; i<n; ++i)
-        {
-            temp_array[0][i] = temp_array[0][i-1] * 2 + temp_item[i];
-        }
-        for(int i = n -2; i >)
+        int minValue = getMinValue(1, k);
+        cout << minValue << '\n';
     }
     return 0;
 }

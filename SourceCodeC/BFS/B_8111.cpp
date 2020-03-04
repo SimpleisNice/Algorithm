@@ -1,62 +1,58 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 #include <queue>
+#include <set>
 #include <string>
 
 using namespace std;
 
 int main(void)
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    
     int t;
     cin >> t;
-
-    while(t--)
+    while (t--)
     {
         int n;
         cin >> n;
 
-        vector<int> from(n, -1);
-        vector<int> how(n, -1);
-        vector<int> dist(n, -1);
+        queue<pair<int, string>> tempQ;
+        tempQ.push(make_pair(1, "1"));
 
-        queue<int> q;
+        
+        set<int> tempS;
+        tempS.insert(1);
 
-        q.push(1%n);
-
-        dist[1%n] = 0;
-        how[1%n] = 1;
-
-        while(!q.empty())
+        while (!tempQ.empty())
         {
-            int now = q.front();
-            q.pop();
+            int value = tempQ.front().first;
+            string tempStr = tempQ.front().second;
+            tempQ.pop();
 
-            for(int i=0; i<=1; i++)
+            if(tempStr.length() <= 100)
             {
-                int next = (now * 10 + i) % n;
-                
-                if(dist[next] == -1)
+                if(value % n == 0)
                 {
-                    dist[next] = dist[now] + 1;
-                    from[next] = now;
-                    how[next] = i;
-                    q.push(next);
+                    cout << tempStr << '\n';
+                    break;
+                }
+                int tempValue = value % n;
+                if(tempS.find(tempValue * 10 + 1) == tempS.end())
+                {
+                    tempS.insert(tempValue * 10 + 1);
+                    tempQ.push(make_pair(tempValue * 10 + 1, tempStr + "1"));
+                }
+                if(tempS.find(tempValue * 10 ) == tempS.end())
+                {
+                    tempS.insert(tempValue * 10);
+                    tempQ.push(make_pair(tempValue * 10, tempStr + "0"));
                 }
             }
-        }
-
-        if(dist[0] == -1)
-            cout << "BANK" << '\n';
-        else
-        {
-            string ans = "";
-            for(int i=0; i != -1; i=from[i])
+            else
             {
-                ans += to_string(how[i]);
+                cout << "BRAK" << '\n';
             }
-            reverse(ans.begin(), ans.end());
-            cout << ans << '\n';
         }
     }
     return 0;

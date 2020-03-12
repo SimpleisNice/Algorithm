@@ -2,22 +2,23 @@
 
 using namespace std;
 
-long d[91][2];
+long long num[91][2];
 int main(void)
 {
-    int N;
-    scanf("%d", &N);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
+    int n;
+    cin >> n;
 
-    d[1][0] = 0; d[1][1] = 1;
-    d[2][0] = 1; d[2][1] = 0;
-
-    for(int i = 3; i <= N; ++i)
+    num[1][1] = 1;
+    
+    for(int i=2; i<=n; ++i)
     {
-        d[i][0] = d[i - 1][0] + d[i - 1][1];
-        d[i][1] = d[i - 1][0];
+        num[i][0] = num[i-1][1] + num[i-1][0];
+        num[i][1] = num[i-1][0];
     }
 
-
-    printf("%ld\n", d[N][0] + d[N][1]);
+    cout << num[n][0] + num[n][1] << "\n";
+    return 0;
 }

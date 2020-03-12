@@ -1,51 +1,46 @@
-// 스티커(9465)
 #include <iostream>
-
+#include <algorithm>
+#include <cstring>
 using namespace std;
 
-int d[100001][3];
-int value[100001][2];
+int pages[100001][2];
+int tempPages[100001][3];
 
 int main(void)
 {
-    int T;
-    scanf("%d", &T);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    while(T--)
+    int t;
+    cin >> t;
+
+    while(t--)
     {
-        int N;
-        scanf("%d", &N);
+        int n;
+        cin >> n;
 
-        for(int i = 0; i <= 1; ++i)
+        for(int i=0; i<2; ++i)
         {
-            for(int j = 1; j<= N; ++j)
+            for(int j=1; j<=n; ++j)
             {
-                scanf("%d", &value[j][i]);
+                cin >> pages[j][i];
             }
         }
-        d[1][0] = 0;
-        d[1][1] = value[1][0];
-        d[1][2] = value[1][1];
 
-        for(int i = 2; i <= N; i++)
+        tempPages[1][0] = 0;
+        tempPages[1][1] = pages[1][0];
+        tempPages[1][2] = pages[1][1];
+        for(int i=2; i<=n; ++i)
         {
-            d[i][0] = d[i-1][0] > d[i-1][1] ? 
-                    d[i-1][0] > d[i-1][2] ? d[i-1][0] : d[i-1][2] :
-                    d[i-1][1] > d[i-1][2] ? d[i-1][1] : d[i-1][2];
-
-            d[i][1] = d[i-1][0] > d[i-1][2] ? d[i-1][0] : d[i-1][2];
-            d[i][1] += value[i][0];
-
-            d[i][2] = d[i-1][0] > d[i-1][1] ? d[i-1][0] : d[i-1][1];
-            d[i][2] += value[i][1];
+            tempPages[i][0] = max(max(tempPages[i-1][0], tempPages[i-1][1]), tempPages[i-1][2]);
+            tempPages[i][1] = max(tempPages[i-1][0], tempPages[i-1][2]) + pages[i][0];
+            tempPages[i][2] = max(tempPages[i-1][0], tempPages[i-1][1]) + pages[i][1];
         }
-        
-        int max =   d[N][0] > d[N][1] ? 
-                    d[N][0] > d[N][2] ? d[N][0] : d[N][2] :
-                    d[N][1] > d[N][2] ? d[N][1] : d[N][2];
 
-        printf("%d\n", max);
-        
+        int maxNum = max(max(tempPages[n][0], tempPages[n][1]),tempPages[n][2]);
+        cout << maxNum << "\n";
+
+        memset(tempPages, 0, sizeof(tempPages));
     }
     return 0;
 }

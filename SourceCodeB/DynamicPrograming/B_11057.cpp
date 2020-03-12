@@ -1,42 +1,35 @@
 #include <iostream>
-#define mod 10007
+
 using namespace std;
 
-int d[1001][10] = {0 ,};
-void GetResult(int num)
-{
-    for(int i = 0; i <= 9; ++i)
-    {
-        d[1][i] = 1;
-    }
-
-    for(int i = 2; i <= num; ++i)
-    {
-        for(int j = 0; j <= 9; ++j)
-        {
-            for(int k = 0; k <= j; ++k)
-            {
-                d[i][j] += d[i -1][k];
-                d[i][j] %= mod;
-            }
-        }
-    }
-
-    long long tempSum = 0;
-    for(int i = 0; i <= 9; ++i)
-    {
-        tempSum += d[num][i];
-    }
-
-    cout << (tempSum % mod) << '\n';
-}
+int num[1001][10];
 int main(void)
 {
     ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int n;
+    cin >> n;
+    
+    for(int i=0; i<10; ++i)
+        num[1][i] = 1;
 
-    int N;
-    cin >> N;
 
-    GetResult(N);
+    for(int i=2; i<=n; ++i)
+    {
+        for(int j=0; j<10; ++j)
+        {
+            for(int k=j; k<10; ++k)
+            {
+                num[i][j] += num[i -1][k];
+                num[i][j] %= 10007;
+            }
+        }
+    }
+    long long sum = 0;
+    for(int i=0; i<10; ++i)
+    {
+        sum += num[n][i]; 
+    }
+    cout << sum % 10007 << "\n";
     return 0;
 }

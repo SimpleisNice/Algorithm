@@ -1,42 +1,31 @@
 #include <iostream>
-#define mod 1000000000
 
 using namespace std;
 
-
-int d[101][10] ={0,};
-
-void GetCount(int N)
-{
-    for(int i = 1; i <= 9; ++i)
-    {
-        d[1][i] = 1;
-    }
-
-    for(int i = 2; i <= N; ++i)
-    {
-        for(int j = 0; j <= 9; ++j)
-        {
-            if(j - 1 >= 0) d[i][j] += d[i - 1][j - 1];
-            if(j + 1 < 10) d[i][j] += d[i - 1][j + 1];
-
-            d[i][j] %= mod;
-        }
-    }
-    long long temp = 0;
-
-    for(int i = 0; i <= 9; ++i)
-    {
-        temp += d[N][i];
-    }
-    cout << (temp % mod) << '\n';
-}
-
+int num[101][10];
 int main(void)
 {
-    int N;
-    cin >> N;
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int n;
+    cin >> n;
 
-    GetCount(N);
+    for(int i=1; i<10; ++i)
+        num[1][i] = 1;
+    
+    for(int i=2; i<=n; ++i) {
+        for(int j=0; j<10; ++j) {
+            if(j > 0) num[i][j] += num[i-1][j-1]; 
+            if(j < 9) num[i][j] += num[i-1][j+1];
+
+            num[i][j] %= 1000000000;
+        }
+    }
+    
+    long long sum = 0;
+    for(int i=0; i<10; ++i) {
+        sum += num[n][i];
+    }
+    cout << sum % 1000000000 << "\n";
     return 0;
 }

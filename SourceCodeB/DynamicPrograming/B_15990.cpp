@@ -1,41 +1,37 @@
 #include <iostream>
-#define mod 1000000009
+
 using namespace std;
 
-int d[100001][4];
-
-void GetCount(int tempN)
-{
-    d[1][1] = 1; d[1][2] = 0; d[1][3] = 0;
-    d[2][1] = 0; d[2][2] = 1; d[2][3] = 0;
-    d[3][1] = 1; d[3][2] = 1; d[3][3] = 1;
-
-    for(int i = 4; i <= tempN; ++i)
-    {
-        d[i][1] = (d[i -1][2] + d[i -1][3]) % mod;
-        d[i][2] = (d[i -2][1] + d[i -2][3]) % mod;
-        d[i][3] = (d[i -3][1] + d[i -3][2]) % mod;
-    }
-
-    long long sum = 0;
-    for(int i = 1; i <= 3; ++i)
-    {
-        sum += d[tempN][i];
-    }
-
-    cout << (sum % mod) << '\n';
-}
+int num[100001][4];
 int main(void)
 {
     ios_base::sync_with_stdio(false);
-    int tempNum;
-    cin >> tempNum;
-    while(tempNum--)
-    {
-        int N;
-        cin >> N;
+    cin.tie(0);
     
-        GetCount(N);
+    num[1][1] = 1;
+    num[2][2] = 1;
+    num[3][1] = 1;
+    num[3][2] = 1;
+    num[3][3] = 1;
+
+    for (int i = 4; i <= 100000; ++i)
+    {
+        num[i][1] = (num[i - 1][2] + num[i - 1][3]) % 1000000009;
+        num[i][2] = (num[i - 2][1] + num[i - 2][3]) % 1000000009;
+        num[i][3] = (num[i - 3][1] + num[i - 3][2]) % 1000000009;
+    }
+    int t;
+    cin >> t;
+    while (t--)
+    {
+        int n;
+        cin >> n;
+        long long sum = 0;
+        for (int i = 1; i < 4; ++i)
+        {
+            sum += num[n][i];
+        }
+        cout << sum % 1000000009 << "\n";
     }
     return 0;
 }

@@ -1,44 +1,38 @@
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
 
+int winecup[10001];
+int tempCup[10001][3];
 
-int value[10001];
-int d[10001][3];
 int main(void)
 {
-    int N;
-    scanf("%d", &N);
+    cin.tie(0);
+    ios_base::sync_with_stdio(false);
 
-    for(int i = 1; i <= N; ++i)
+    int n;
+    cin >> n;
+
+    for(int i=1; i<=n; ++i) 
     {
-        scanf("%d", &value[i]);
+        cin >> winecup[i];
     }
 
-    d[1][0] = 0;
-    d[1][1] = value[1];
-    d[1][2] = 0;
+    tempCup[1][1] = winecup[1];
 
-    d[2][0] = value[1];
-    d[2][1] = value[2];
-    d[2][2] = value[1] + value[2];
-
-
-    for(int i = 3; i <= N; ++i)
+    for(int i=2; i<=n; ++i)
     {
-        d[i][0] = max(max(d[i-1][0], d[i-1][1]), d[i-1][2]);
-        d[i][1] = d[i -1][0] + value[i];
-        d[i][2] = d[i -1][1] + value[i];
+        tempCup[i][0] = max(max(tempCup[i-1][0], tempCup[i-1][1]), tempCup[i-1][2]);
+        tempCup[i][1] = tempCup[i-1][0] + winecup[i];
+        tempCup[i][2] = tempCup[i-1][1] + winecup[i];
     }
 
-    int maxTemp = 0;
-
-    for(int i = 0; i < 3; ++i)
+    int maxSum = 0;
+    for(int i=0; i<3; ++i)
     {
-        if(maxTemp < d[N][i])
-            maxTemp = d[N][i];
+        maxSum = max(maxSum, tempCup[n][i]);
     }
-
-    printf("%d\n", maxTemp);
+    cout << maxSum << "\n";
     return 0;
 }

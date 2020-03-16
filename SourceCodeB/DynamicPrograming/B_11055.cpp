@@ -1,48 +1,43 @@
 #include <iostream>
-#include <vector>
+#include <algorithm>
 
 using namespace std;
 
+int num[1001];
+int tempSum[1001];
 
-int A[1001];
-int d[1001];
-
-void LIS(int N)
+int main(void)
 {
-    for(int i = 1; i <= N; ++i)
-    {
-        d[i] = A[i];
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-        for(int j = i; j >= 1; --j)
+    int n;
+    cin >> n;
+
+    for(int i=1; i<=n; ++i)
+    {
+        cin >> num[i];
+    }
+
+    for(int i=1; i<=n; ++i)
+    {
+        tempSum[i] = num[i];
+
+        for(int j=i-1; j>=1; --j)
         {
-            if(A[i] > A[j])
+            if(num[i] > num[j])
             {
-                if(d[i] < d[j] + A[i])
-                {
-                    d[i] = d[j] + A[i];
-                }
+                tempSum[i] = max(tempSum[i], tempSum[j] + num[i]);
             }
         }
     }
-}
-int main(void)
-{
-    int N;
-    scanf("%d", &N);
 
-    for(int i = 1; i <= N; ++i)
+    int maxSum = 0;
+    for(int i=1; i<=n; ++i)
     {
-        scanf("%d", &A[i]);
+        maxSum = max(maxSum, tempSum[i]);
     }
-    LIS(N);
+    cout << maxSum << '\n';
 
-    int max = 0;
-    for(int i = 1; i <= N; ++i)
-    {
-        if(max < d[i])
-            max = d[i];
-    }
-
-    printf("%d\n", max);
     return 0;
 }

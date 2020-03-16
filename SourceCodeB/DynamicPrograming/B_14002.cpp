@@ -1,72 +1,62 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
+
 using namespace std;
 
-int A[10001];
-int d[10001][2];    
+int num[1001];
+int tempNum[1001][2];
 
-void GetResult(int N)
+int main(void)
 {
-    for(int i = 1; i <= N; ++i)
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int n;
+    cin >> n;
+    for(int i=1; i<=n; ++i)
     {
-        d[i][0] = 1;
-        for(int j = i; j >= 1; --j)
+        cin >> num[i];
+    }
+    for(int i=1; i<=n; ++i)
+    {
+        tempNum[i][0] = 1;
+        tempNum[i][1] = -1;
+
+        for(int j=i-1; j>=1; --j)
         {
-            if(A[i] > A[j])
+            if(num[i] > num[j])
             {
-                if(d[i][0] < d[j][0] + 1)
+                if(tempNum[i][0] < tempNum[j][0] + 1)
                 {
-                    d[i][0] = d[j][0] + 1;
-                    d[i][1] = j;
+                    tempNum[i][0] = tempNum[j][0] + 1;
+                    tempNum[i][1] = j;
                 }
             }
         }
     }
-}
-int main(void)
-{
-    int N;
-    vector<int> tempV;
 
-    scanf("%d", &N);
-
-    for(int i = 1; i <= N; ++i)
+    int tempPos = 0;
+    int maxValue = 0;
+    for(int i=1; i<=n; ++i)
     {
-        scanf("%d", &A[i]);
-    }
-    GetResult(N);
-
-    int tempMax = 0;
-    int tempNum = 0;
-    for(int i = 1; i <= N; ++i)
-    {
-        if(tempMax < d[i][0])
-        {    
-            tempMax = d[i][0];
-            tempNum = i;
+        if(maxValue < tempNum[i][0])
+        {   
+            tempPos = i;
+            maxValue = tempNum[i][0];
         }
     }
-    
-    printf("%d\n", tempMax);
 
+    vector<int> tempV;
     while(true)
     {
-        if(tempNum == 0)
+        tempV.push_back(num[tempPos]);
+        if(tempNum[tempPos][1] == -1)
             break;
-        tempV.push_back(tempNum);
-        
-        tempNum = d[tempNum][1];
+        tempPos = tempNum[tempPos][1];
     }
-    
-    sort(tempV.begin(), tempV.end());
-
-    
-    for(vector<int>::iterator it = tempV.begin(); it != tempV.end(); ++it)
+    cout << maxValue << "\n";
+    for(int i=tempV.size()-1; i>=0; --i)
     {
-        printf("%d ", A[*it]);
+        cout << tempV[i] << " ";
     }
-    printf("\n");
-    
     return 0;
 }

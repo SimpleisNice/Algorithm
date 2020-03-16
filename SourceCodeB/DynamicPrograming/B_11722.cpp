@@ -1,42 +1,41 @@
 #include <iostream>
-#include <climits>
+#include <algorithm>
+
 using namespace std;
 
-int A[1001];
-int d[1001];
+int num[1001];
+int numCount[1001];
+
 int main(void)
 {
-    int N;
-    scanf("%d", &N);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    for(int i = 1; i <= N; ++i)
+    int n;
+    cin >> n;
+
+    for(int i=1; i<=n; ++i)
     {
-        scanf("%d", &A[i]);
+        cin >> num[i];
     }
 
-    for(int i = 1; i <= N; ++i)
+    for(int i=1; i<=n; ++i)
     {
-        d[i] = 1;
-        for(int j = i; j >= 1; --j)
+        numCount[i] = 1;
+
+        for(int j=i-1; j>=1; --j)
         {
-            if(A[i] < A[j])
+            if(num[i] < num[j])
             {
-                if(d[i] < d[j] + 1)
-                {
-                    d[i] = d[j] + 1;
-                }
+                numCount[i] = max(numCount[i], numCount[j] + 1);
             }
         }
     }
-
-    int max = 0; 
-
-    for(int i = 1; i <= N; ++i)
+    int maxValue = 0;
+    for(int i=1; i<=n; ++i)
     {
-        if(max < d[i])
-            max = d[i];
+        maxValue = max(maxValue, numCount[i]);
     }
-
-    printf("%d\n", max);
+    cout << maxValue;
     return 0;
 }

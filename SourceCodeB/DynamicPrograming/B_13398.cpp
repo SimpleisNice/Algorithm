@@ -1,47 +1,45 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
 #include <climits>
 
 using namespace std;
 
-
-int d[100001][2];
+int num[100001];
+int tempNum[100001][2];
 int main(void)
 {
-	int N;
-	int tempMax = INT_MIN;
-	scanf("%d", &N);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int n;
+    int maxNum;
+    cin >> n;
 
-	vector<int> tempV(N + 1);
-	for (int i = 1; i <= N; i++)
-	{
-		scanf("%d", &tempV[i]);
-	}
+    for (int i = 1; i <= n; ++i)
+    {
+        cin >> num[i];
+    }
+    if (n > 1)
+    {
+        tempNum[1][0] = num[1];
+        tempNum[n][1] = num[n];
 
-
-	d[1][0] = tempV[1];
-    d[N][1] = tempV[N];
-    if(N > 1)
-	{
-        for (int i = 2; i <= N; ++i)
-	    {
-            d[i][0] = max(d[i-1][0] + tempV[i], tempV[i]);
-            d[N + 1 - i][1] = max(d[N + 2 - i][1] + tempV[N + 1 - i], tempV[N + 1 - i]);
-	    }
-
-        for(int i = 1; i <= N; ++i)
+        for (int i = 2; i <= n; ++i)
         {
-            if(tempMax < d[i][0])
-                tempMax = d[i][0];
+            tempNum[i][0] = max(tempNum[i - 1][0] + num[i], num[i]);
         }
-        for(int i = 2; i <= N-1; ++i)
+        for (int i = n - 1; i >= 1; --i)
         {
-            if(tempMax < d[i-1][0] + d[i + 1][1])
-                tempMax = d[i-1][0] + d[i + 1][1];
+            tempNum[i][1] = max(tempNum[i + 1][1] + num[i], num[i]);
+        }
+
+        maxNum = INT_MIN;
+        for (int i = 1; i <= n; ++i)
+        {
+            maxNum = max(maxNum, tempNum[i][0] + tempNum[i][1]);
+            maxNum = max(maxNum, tempNum[i][0]);
         }
     }
-    else
-        tempMax = d[1][0];
-	printf("%d\n", tempMax);
+    else 
+        maxNum = num[1];
+    cout << maxNum << "\n";
 }

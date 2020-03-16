@@ -1,50 +1,50 @@
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
-int A[1001];
-int d[1001][2];
+
+int num[1001];
+int tempNum1[1001];
+int tempNum2[1001];
+
 int main(void)
 {
-    int N;
-    scanf("%d", &N);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    for(int i = 1; i <= N; ++i)
-    {
-        scanf("%d", &A[i]);
-    }
+    int n;
+    cin >> n;
     
-    for(int i = 1; i <= N; ++i)
+
+    for(int i=1; i<=n; ++i)
     {
-        d[i][0] = 1;
-        for(int j = i; j >= 1; --j)
+        cin >> num[i];
+    }
+
+    for(int i=1; i<=n; ++i)
+    {
+        tempNum1[i] = 1;
+        for(int j=i-1; j>=1; --j)
         {
-            if(A[i] > A[j] && d[i][0] < d[j][0] + 1)
-            {
-                d[i][0] = d[j][0] + 1;
-            }
+            if(num[i] > num[j])
+                tempNum1[i] = max(tempNum1[i], tempNum1[j] + 1);
         }
     }
-        
-    for(int i = N; i >= 1; --i)
+    for(int i=n; i>=1; --i)
     {
-        d[i][1] = 1;
-        for(int j = i; j <= N; ++j)
+        tempNum2[i] = 1;
+        for(int j=i+1; j<=n; ++j)
         {
-            if(A[i] > A[j] && d[i][1] < d[j][1] + 1)
-            {
-                d[i][1] = d[j][1] + 1;
-            }
+            if(num[i] > num[j])
+                tempNum2[i] = max(tempNum2[i], tempNum2[j] + 1);
         }
     }
 
-    int max = 0;
-
-    for(int i = 1; i <=N; ++i)
+    int maxCount = 0;
+    for(int i=1; i<=n; ++i)
     {
-        if(max < d[i][0] + d[i][1])
-            max = d[i][0] + d[i][1];
+        maxCount = max(maxCount, tempNum1[i] + tempNum2[i] - 1);
     }
-
-    printf("%d\n", max -1);
+    cout << maxCount;
     return 0;
 }

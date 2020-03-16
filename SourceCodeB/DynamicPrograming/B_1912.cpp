@@ -1,38 +1,34 @@
 #include <iostream>
+#include <algorithm>
 #include <climits>
 using namespace std;
 
-int N[100001];
-int d[100001];
+int num[100001];
+int tempNum[100001];
 int main(void)
 {
-    int T;
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    scanf("%d", &T);
+    int n;
+    cin >> n;
 
-    for(int i = 1; i <= T; ++i)
+    for(int i=1; i<=n; ++i)
     {
-        scanf("%d", &N[i]);
+        cin >> num[i];
     }
 
-    d[1] = N[1];
-    for(int i = 2; i <= T; ++i)
+    tempNum[1] = num[1];
+    for(int i=2; i<=n; ++i)
     {
-        d[i] = N[i];
-        if(d[i] < d[i - 1] + N[i])
-        {
-            d[i] = d[i - 1] + N[i];
-        }
+        tempNum[i] = max(tempNum[i-1] + num[i], num[i]);
     }
 
-    int max = INT_MIN;
-
-    for(int i = 1; i <= T; ++i)
+    int maxNum = INT_MIN;
+    for(int i=1; i<=n; ++i)
     {
-        if(max < d[i])
-            max = d[i];
+        maxNum = max(maxNum, tempNum[i]);
     }
-
-    printf("%d\n", max);
+    cout << maxNum << "\n";
     return 0;
 }

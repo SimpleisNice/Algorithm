@@ -10,15 +10,10 @@ void getMax(int x, int y, int sum)
 {
     if (x == n || y > x)
         return;
-
-    if (setInfo[x][y] == 0)
-    {
-        setInfo[x][y] = sum + triangle[x][y];
-    }
-    else if(setInfo[x][y] > sum + triangle[x][y])
+    if(setInfo[x][y] > sum + triangle[x][y])
         return;
-    else
-        setInfo[x][y] = max(setInfo[x][y], sum + triangle[x][y]);
+
+    setInfo[x][y] = sum + triangle[x][y];
     getMax(x + 1, y, setInfo[x][y]);
     getMax(x + 1, y + 1, setInfo[x][y]);
 }

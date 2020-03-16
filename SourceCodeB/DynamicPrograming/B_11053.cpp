@@ -1,38 +1,40 @@
-// 가장 긴 증가하는 부분 수열
 #include <iostream>
+#include <algorithm>
+
 using namespace std;
-int A[1001];
-int d[1001];
+
+int num[1001];
+int numCount[1001];
 int main(void)
 {
-	int N;
-	scanf("%d", &N);
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
 
-	for (int i = 1; i <= N; ++i)
+	int n;
+	cin >> n;
+
+	for(int i=1; i<=n; ++i)
 	{
-		scanf("%d", &A[i]);
+		cin >> num[i];
 	}
 
-	for (int i = 1; i <= N; ++i)
+	for(int i=1; i<=n; ++i)
 	{
-		d[i] = 1;
-		for (int j = i - 1; j >= 1; --j)
+		numCount[i] = 1;
+		for(int j=i-1; j>=1; --j)
 		{
-			if (A[i] > A[j])
+			if(num[i] > num[j])
 			{
-				if (d[i] <= d[j])
-					d[i] = d[j] + 1;
+				numCount[i] = max(numCount[i], numCount[j] + 1);
 			}
 		}
 	}
-	int tempMax = 0;
-
-	for (int i = 1; i <= N; ++i)
+	
+	int maxCount = 0;
+	for(int i=1; i<=n; ++i)
 	{
-		if (tempMax < d[i])
-			tempMax = d[i];
+		maxCount = max(maxCount, numCount[i]);
 	}
-
-	printf("%d\n", tempMax);
+	cout << maxCount << "\n";
 	return 0;
 }

@@ -33,10 +33,13 @@ int main(void)
         }
 
         maxNum = INT_MIN;
-        for (int i = 1; i <= n; ++i)
+        for(int i=1; i<=n; ++i)
         {
-            maxNum = max(maxNum, tempNum[i][0] + tempNum[i][1]);
             maxNum = max(maxNum, tempNum[i][0]);
+        }
+        for (int i = 2; i < n; ++i)
+        {
+            maxNum = max(maxNum, tempNum[i-1][0] + tempNum[i+1][1]);
         }
     }
     else 

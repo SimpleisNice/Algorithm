@@ -1,22 +1,25 @@
 #include <iostream>
+#include <algorithm>
+
 using namespace std;
 
-int d[100001];
+int num[100001];
+
 int main(void)
 {
-    int N;
-    scanf("%d", &N);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    for(int i = 1; i <= N; ++i)
+    int n;
+    cin >> n;
+    for(int i=1; i<=n; ++i)
     {
-        d[i] = i;
-
-        for(int j = 1; j*j <= i; ++j)
+        num[i] = i;
+        for(int j=1; j*j<=i; ++j)
         {
-            if(d[i] > d[i - j * j] + 1)
-                d[i] = d[i - j * j] + 1;
+            num[i] = min(num[i], num[i-j*j] + 1);
         }
     }
-    printf("%d\n", d[N]);
+    cout << num[n] << "\n";
     return 0;
 }

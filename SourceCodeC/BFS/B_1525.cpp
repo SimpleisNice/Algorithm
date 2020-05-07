@@ -1,64 +1,66 @@
 #include <iostream>
 #include <string>
-#include <queue>
 #include <map>
+#include <queue>
 
 using namespace std;
 
-int dx[] = {0, 0, -1, 1};
-int dy[] = {-1, 1, 0, 0};
+int moveX[] = { 0,0,-1,1 };
+int moveY[] = { -1,1,0,0 };
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	int startPos = 0;
+	int num = 0;
 
-int main(void)
-{
-    int n = 3;
-    int start = 0;
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			int tempNum;
+			cin >> tempNum;
 
-    for(int i = 0; i < n; ++i)
-    {
-        for(int j = 0; j < n; ++j)
-        {
-            int temp;
-            cin >> temp;
+			if (tempNum == 0) {
+				tempNum = 9;
+				startPos = i * 3 + j;
+			}
+			num = num * 10 + tempNum;
+		}
+	}
 
-            if(temp == 0)
-                temp = 9;
-        }
-        start = start * 10 + temp;
-    }    
+	map<int, int> puzzleInfo;
+	puzzleInfo[num] = 0;
 
-    queue<int> q;
-    map<int, int> dist;
-    dist[start] = 0;
-    q.push(0);
+	queue<pair<int, int>> tempQ;
+	tempQ.push(make_pair(num, startPos));
 
-    while(!q.empty())
-    {
-        int now_num = q.front();
-        string now = to_string(now_num);
-        q.pop();
+	while (!tempQ.empty()) {
+		int puzzle = tempQ.front().first;
+		int x = tempQ.front().second / 3;
+		int y = tempQ.front().second % 3;
+		string strNum = to_string(puzzle);
+		tempQ.pop();
 
-        int z = now.find('9');
-        int x = z / 3;
-        int y = z % 3;
+		for (int i = 0; i < 4; ++i) {
+			int tempX = x + moveX[i];
+			int tempY = y + moveY[i];
 
-        for(int i = 0; i < 4; ++i)
-        {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+			if (tempX < 0 || tempX > 2 || tempY < 0 || tempY > 2)
+				continue;
 
-            if(nx < 0 || nx >= n && ny < 0 || ny >= n)
-                continue;
-            
-            string next = now;
-            swap(next[x * 3 + y], next[nx * 3 + ny]);
+			string tempNum = strNum;
+			swap(tempNum[x * 3 + y], tempNum[tempX * 3 + tempY]);
+			int tempPuzzle = stoi(tempNum);
+			if (puzzleInfo.count(tempPuzzle) == 0) {
+				puzzleInfo[tempPuzzle] = puzzleInfo[puzzle] + 1;
+				tempQ.push(make_pair(tempPuzzle, tempX * 3 + tempY));
+			}
+		}
+	}
 
-            int num = stoi(next);
-
-            if(dist.count(num) == 0)
-            {
-                dist[num] = dist[now_num] + 1;
-                q.push(num);
-            }
-        }
-    }
+	if (puzzleInfo.find(123456789) != puzzleInfo.end()) {
+		cout << puzzleInfo[123456789] << "\n";
+	}
+	else {
+		cout << -1 << "\n";
+	}
+	return 0;
 }

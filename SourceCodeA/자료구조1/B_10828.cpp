@@ -1,62 +1,55 @@
 #include <iostream>
+#include <deque>
 #include <string>
-#include <stack>
 
 using namespace std;
 
-void CheckQuery(string temp, stack<int>& tempStack)
-{
-    switch(temp.at(0))
-    {
-        case 'p':
-            if("push" == temp)
-            {
-                int num;
-                cin >> num;
-                tempStack.push(num);
-            }
-            else
-            {
-                if(!tempStack.empty())
-                {
-                    cout << tempStack.top() << endl;
-                    tempStack.pop();
-                }
-                else
-                    cout << -1 << endl;
-            }
-            break;
-        case 's':
-            cout << tempStack.size() << endl;
-            break;
-        case 'e':
-            if(!tempStack.empty())
-                cout << 0 << endl;
-            else
-                cout << 1 << endl;
-            break;
-        case 't':
-            if(!tempStack.empty())
-                cout << tempStack.top() << endl;
-            else
-                cout << -1 << endl;
-            break;
-        default:
-            break;
-    }
-}
-int main(void)
-{
-    int inputTemp;
-    stack<int> inputStack;
-    string queryString;
+int main(void) {
+  ios_base::sync_with_stdio(false);
+  cin.tie(0);
 
-    cin >> inputTemp;
+  int count = 0;
+  deque<int> stack;
 
-    while(inputTemp--)
-    {
-        cin >> queryString;
-        CheckQuery(queryString, inputStack);
+  cin >> count;
+  cin.ignore();
+
+  while(count--) {
+    string order;
+    getline(cin, order);
+    
+    switch(order[0]) {
+      case 'p':
+        if (order[1] == 'u') {
+          int num = stoi(order.substr(5));
+          stack.push_front(num);
+        } else {
+          if (!stack.empty()) {
+            cout << stack.front() << "\n";
+            stack.pop_front();
+          } else {
+            cout << -1 << "\n";
+          }
+        }
+        break;
+      case 's':
+        cout << stack.size() << "\n";
+        break;
+      case 'e':
+        if(!stack.empty()) {
+          cout << "0\n";
+        } else {
+          cout << "1\n";
+        }
+        break;
+      case 't':
+        if(!stack.empty()) {
+          cout << stack.front() << "\n";
+        } else {
+          cout << -1 << "\n";
+        }
+        break;
     }
-    return 0;
+  }
+  return 0;
 }

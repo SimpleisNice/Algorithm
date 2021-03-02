@@ -20,12 +20,21 @@ int main(void) {
     switch(order[0]) {
       case 'p':
         if(order[1] == 'u') {
-          int num = stoi(order.substr(5));
-          tempQ.push_back(num);
+          int num = stoi(order.substr(10));
+          if (order[5] == 'f') {
+            tempQ.push_front(num);
+          } else {
+            tempQ.push_back(num);
+          }
         } else {
           if (!tempQ.empty()) {
-            cout << tempQ.front() << '\n';
-            tempQ.pop_front();
+            if (order[4] == 'f') {
+              cout << tempQ.front() << '\n';
+              tempQ.pop_front();
+            } else {
+              cout << tempQ.back() << '\n';
+              tempQ.pop_back();
+            }
           } else {
             cout << -1 << '\n';
           }
